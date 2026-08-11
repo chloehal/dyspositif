@@ -279,11 +279,16 @@ def commande_apercu(args):
 def commande_verifier(args):
     resultats = {}
     passe = True
+    incomplet = False
 
     validation = paquet.valider(args.sortie, original=args.original, auteur=args.auteur)
     resultats["validate.py"] = {"passe": validation[0], "sortie": validation[1][:4000]}
     if validation[0] is False:
         passe = False
+    elif validation[0] is None:
+        # Une vérification qui n'a pas pu tourner n'est pas une vérification
+        # réussie : on le dit au lieu de laisser croire que tout va bien.
+        incomplet = True
 
     avant = analyse.analyser_docx(args.original)
     apres = analyse.analyser_docx(args.sortie)
@@ -305,9 +310,20 @@ def commande_verifier(args):
     if not valeurs["identiques"]:
         passe = False
 
-    resultats["verdict"] = "passe" if passe else "échec"
+    if not passe:
+        resultats["verdict"] = "échec"
+    elif incomplet:
+        resultats["verdict"] = "incomplet"
+        resultats["a_faire"] = (
+            "Les contrôles internes passent, mais validate.py n'a pas pu tourner : "
+            "le document n'a pas été vérifié contre les schémas XSD."
+        )
+    else:
+        resultats["verdict"] = "passe"
     print(json.dumps(resultats, ensure_ascii=False, indent=2))
-    return 0 if passe else 3
+    if not passe:
+        return 3
+    return 4 if incomplet else 0
 
 
 def _controle_des_nombres(original, sortie):
@@ -325,7 +341,7 @@ def _controle_des_nombres(original, sortie):
 
     def nombres(chemin):
         with zipfile.ZipFile(chemin) as archive:
-            racine = ooxml.ET.fromstring(archive.read("word/document.xml"))
+            racine = ooxml.lire(archive.read("word/document.xml"))
         # w:t seulement : c'est la vue « toutes modifications acceptées ».
         texte = " ".join(
             noeud.text or ""
@@ -421,6 +437,13 @@ def principal(argv=None):
     if not getattr(arguments, "fonction", None):
         parseur.print_help()
         return 1
+    if not ooxml.XML_DURCI:
+        print(
+            "Avertissement : defusedxml n'est pas installé. Les documents traités "
+            "viennent de tiers ; sans lui, une bombe d'entités XML n'est pas "
+            "arrêtée. Installer : python3 -m pip install defusedxml",
+            file=sys.stderr,
+        )
     try:
         return arguments.fonction(arguments)
     except paquet.ErreurPaquet as erreur:

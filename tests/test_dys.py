@@ -64,13 +64,13 @@ def lancer(*arguments, **kwargs):
 def texte_rejete(chemin):
     """Le texte tel qu'il revient si l'on rejette toutes les modifications suivies."""
     with zipfile.ZipFile(chemin) as archive:
-        racine = ooxml.ET.fromstring(archive.read("word/document.xml"))
+        racine = ooxml.lire(archive.read("word/document.xml"))
     return _texte(racine, garder_insertions=False)
 
 
 def texte_accepte(chemin):
     with zipfile.ZipFile(chemin) as archive:
-        racine = ooxml.ET.fromstring(archive.read("word/document.xml"))
+        racine = ooxml.lire(archive.read("word/document.xml"))
     return _texte(racine, garder_insertions=True)
 
 

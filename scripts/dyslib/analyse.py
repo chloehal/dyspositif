@@ -41,7 +41,7 @@ def analyser_docx(chemin):
         noms = archive.namelist()
         donnees = archive.read("word/document.xml")
         medias = [n for n in noms if n.startswith("word/media/")]
-    racine = ooxml.ET.fromstring(donnees)
+    racine = ooxml.lire(donnees)
 
     paragraphes = []
     for index, paragraphe in enumerate(racine.iter(q("w:p"))):
@@ -188,7 +188,7 @@ def blocs_pour_pages(chemin, pages, caracteres_par_page=1800):
     que l'utilisateur va peut-être refuser.
     """
     with zipfile.ZipFile(chemin) as archive:
-        racine = ooxml.ET.fromstring(archive.read("word/document.xml"))
+        racine = ooxml.lire(archive.read("word/document.xml"))
     budget = pages * caracteres_par_page
     total = 0
     blocs = 0
@@ -346,6 +346,18 @@ def nombre_annonce(texte):
 # -- PDF -------------------------------------------------------------------
 
 
+FLUX_MAX = 32 * 1024 * 1024  # un flux PDF qui dépasse ça est une bombe, pas un cours
+
+
+def _decompresser(flux):
+    """Décompresse un flux PDF sans se laisser gonfler la mémoire."""
+    try:
+        moteur = zlib.decompressobj()
+        return moteur.decompress(flux, FLUX_MAX)
+    except zlib.error:
+        return flux
+
+
 def analyser_pdf(chemin):
     """Un PDF scanné n'a pas de texte extractible : le détecter, le dire.
 
@@ -361,11 +373,7 @@ def analyser_pdf(chemin):
     caracteres = 0
     operateurs = 0
     for flux in re.findall(rb"stream\r?\n(.*?)endstream", donnees, re.S):
-        contenu = flux
-        try:
-            contenu = zlib.decompress(flux)
-        except zlib.error:
-            pass
+        contenu = _decompresser(flux)
         if b"Tj" not in contenu and b"TJ" not in contenu and b"'" not in contenu:
             continue
         operateurs += contenu.count(b"Tj") + contenu.count(b"TJ")

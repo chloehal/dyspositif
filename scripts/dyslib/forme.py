@@ -79,7 +79,7 @@ def _taille_par_defaut(dossier):
     chemin = _chemin_styles(dossier)
     if not chemin.is_file():
         return 11.0
-    racine = ET.parse(str(chemin)).getroot()
+    racine = ooxml.lire_fichier(chemin).getroot()
     defauts = racine.find("./%s/%s/%s" % (q("w:docDefaults"), q("w:rPrDefault"), q("w:rPr")))
     if defauts is not None:
         taille = defauts.find(q("w:sz"))
@@ -92,7 +92,7 @@ def _styles(dossier, profil, ratio):
     chemin = _chemin_styles(dossier)
     if not chemin.is_file():
         return 0
-    arbre = ET.parse(str(chemin))
+    arbre = ooxml.lire_fichier(chemin)
     racine = arbre.getroot()
     demi_points = int(round(profil["taille_pt"] * 2))
     interligne = int(round(float(profil["interligne"]) * 240))
@@ -244,7 +244,7 @@ def _fond(document, dossier, profil):
 
     chemin = dossier / "word" / "settings.xml"
     if chemin.is_file():
-        arbre = ET.parse(str(chemin))
+        arbre = ooxml.lire_fichier(chemin)
         reglages = arbre.getroot()
         # Sans ce réglage, Word ignore purement et simplement w:background.
         poser_enfant(reglages, "w:displayBackgroundShape", ooxml.ORDRE_SETTINGS)

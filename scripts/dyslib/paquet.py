@@ -80,22 +80,43 @@ def python_docx():
 # -- archive ---------------------------------------------------------------
 
 
-def ouvrir(docx, destination):
-    """Décompresse le .docx et supprime les liens symboliques.
+TAILLE_MAX_DECOMPRESSEE = 800 * 1024 * 1024  # 800 Mo : un cours n'en fait jamais autant
+ENTREES_MAX = 5000
 
-    Un document reçu d'un tiers n'est pas de confiance : une entrée de type
-    lien symbolique dans l'archive peut écrire hors du dossier de travail.
+
+def ouvrir(docx, destination):
+    """Décompresse le .docx en traitant l'archive comme non fiable.
+
+    Trois protections, parce qu'un document reçu d'un tiers n'est pas de
+    confiance : chemin sortant du dossier de travail (`../../.ssh/`), entrée de
+    type lien symbolique, et bombe de décompression.
     """
     destination = Path(destination)
     destination.mkdir(parents=True, exist_ok=True)
+    racine = destination.resolve()
+    total = 0
     with zipfile.ZipFile(docx) as archive:
-        for entree in archive.infolist():
+        entrees = archive.infolist()
+        if len(entrees) > ENTREES_MAX:
+            raise ErreurPaquet(
+                "archive suspecte : %s entrées (maximum %s)"
+                % (len(entrees), ENTREES_MAX)
+            )
+        for entree in entrees:
             cible = (destination / entree.filename).resolve()
-            if not str(cible).startswith(str(destination.resolve())):
-                raise ErreurPaquet("entrée d'archive hors du dossier : %s" % entree.filename)
+            if cible != racine and racine not in cible.parents:
+                raise ErreurPaquet(
+                    "entrée d'archive hors du dossier : %s" % entree.filename
+                )
             mode = entree.external_attr >> 16
             if mode and (mode & 0xF000) == 0xA000:  # lien symbolique
                 continue
+            total += entree.file_size
+            if total > TAILLE_MAX_DECOMPRESSEE:
+                raise ErreurPaquet(
+                    "archive suspecte : plus de %s Mo une fois décompressée"
+                    % (TAILLE_MAX_DECOMPRESSEE // (1024 * 1024))
+                )
             archive.extract(entree, destination)
     for chemin in destination.rglob("*"):
         if chemin.is_symlink():
@@ -134,8 +155,19 @@ def fusionner_runs(dossier):
 
 
 def valider(docx, original=None, auteur=None, reparer=False):
-    """validate.py : XSD, et modifications suivies si --original et --author."""
-    skill = skill_docx()
+    """validate.py : XSD, et modifications suivies si --original et --author.
+
+    Renvoie (None, raison) si la vérification n'a pas pu tourner. Une
+    vérification impossible n'est pas une vérification réussie : l'appelant
+    doit le dire plutôt que de laisser croire que tout va bien.
+    """
+    skill = skill_docx(obligatoire=False)
+    if skill is None:
+        return (
+            None,
+            "Validation impossible : skill docx introuvable.\n"
+            "export DYSPOSITIF_SKILL_DOCX=/chemin/vers/skills/docx",
+        )
     interprete = python_docx()
     if interprete is None:
         return (

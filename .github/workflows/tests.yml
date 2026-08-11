@@ -1,0 +1,47 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.9 est la version livrée avec macOS : la skill doit y tourner.
+        python: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Installer defusedxml (durcissement XML)
+        run: python -m pip install --quiet defusedxml
+
+      - name: Tests
+        run: python3 tests/test_dys.py
+
+      - name: Le document produit se relit et se vérifie
+        run: |
+          python3 tests/fabriquer_fixture.py
+          python3 scripts/dys.py analyser tests/documents/cours-droit-constitutionnel.docx
+          python3 scripts/dys.py appliquer \
+            tests/documents/cours-droit-constitutionnel.docx /tmp/sortie.docx
+          # 0 = tout passe, 4 = incomplet (validate.py absent de la CI, la skill
+          # docx n'y est pas installée), 3 = échec réel → on échoue.
+          set +e
+          python3 scripts/dys.py verifier /tmp/sortie.docx \
+            --original tests/documents/cours-droit-constitutionnel.docx
+          code=$?
+          set -e
+          test "$code" -eq 0 -o "$code" -eq 4
+        env:
+          DYSPOSITIF_PROFIL: /tmp/profil-ci.json

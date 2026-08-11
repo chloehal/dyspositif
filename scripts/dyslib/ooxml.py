@@ -8,6 +8,28 @@ indentation — Word interprète les espaces entre balises comme du contenu.
 import re
 import xml.etree.ElementTree as ET
 
+# Les documents traités viennent de tiers. defusedxml coupe les bombes
+# d'entités et les entités externes ; sans lui, on parse quand même, mais
+# `dys.py analyser` le signale.
+try:
+    from defusedxml.ElementTree import fromstring as _fromstring_sur
+    from defusedxml.ElementTree import parse as _parse_sur
+
+    XML_DURCI = True
+except ImportError:  # pragma: no cover - dépend de l'environnement
+    _fromstring_sur = ET.fromstring
+    _parse_sur = ET.parse
+    XML_DURCI = False
+
+
+def lire(donnees):
+    """Parse du XML venant d'un document non fiable."""
+    return _fromstring_sur(donnees)
+
+
+def lire_fichier(chemin):
+    return _parse_sur(str(chemin))
+
 NS = {
     "w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
     "r": "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
@@ -68,7 +90,7 @@ class Document(object):
         self.chemin = chemin
         with open(chemin, "rb") as f:
             self.source = f.read()
-        self.racine = ET.fromstring(self.source)
+        self.racine = lire(self.source)
         self._balise_origine = _balise_racine(self.source)
 
     # -- écriture ---------------------------------------------------------
