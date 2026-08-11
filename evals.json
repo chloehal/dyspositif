@@ -1,0 +1,145 @@
+{
+  "skill_name": "dyspositif",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Je suis dyslexique et j'ai un TDAH. J'ai ce cours de droit constitutionnel de 30 pages à réviser pour la semaine prochaine, je n'arrive pas à le lire. Tu peux m'aider ?",
+      "expected_output": "La skill pose le questionnaire de profil (6 questions max, à choix), l'enregistre, annonce le volume et le coût estimé, produit un APERÇU des premières sections seulement, et attend validation avant d'aller plus loin. Ne produit pas le document complet d'emblée.",
+      "files": [
+        "cours-droit-constitutionnel.docx"
+      ],
+      "assertions": [
+        "Un profil est enregistré sur disque après le questionnaire",
+        "Un aperçu partiel est produit avant tout document complet",
+        "Le document complet n'est PAS produit sans validation explicite",
+        "Le fichier de sortie s'ouvre sans erreur (validate.py passe)",
+        "Les images et tableaux du document d'origine sont tous présents",
+        "Toute modification de texte est encadrée par une modification suivie"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Voilà un autre cours, tu peux me le faire pareil que la dernière fois ?",
+      "expected_output": "La skill rappelle le profil existant en UNE ligne, ne repose aucune question du questionnaire, et enchaîne directement sur l'analyse puis l'aperçu.",
+      "files": [
+        "cours-economie.docx"
+      ],
+      "assertions": [
+        "Aucune question du questionnaire initial n'est reposée",
+        "Le profil existant est rappelé en une seule ligne",
+        "Le fichier de sortie s'ouvre sans erreur (validate.py passe)",
+        "Les images et tableaux du document d'origine sont tous présents",
+        "Toute modification de texte est encadrée par une modification suivie"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Ce chapitre est vraiment trop dense, tu peux m'en faire une carte mentale avec les liens entre les notions ?",
+      "expected_output": "La skill reconnaît que la carte mentale relève de la synthèse, hors périmètre. Elle le dit clairement sans refuser sèchement, et propose ce qu'elle sait faire : segmentation des phrases longues, aération, repères de navigation.",
+      "files": [
+        "chapitre-dense.docx"
+      ],
+      "assertions": [
+        "Aucune carte mentale n'est produite",
+        "La réponse explique que la synthèse est hors périmètre",
+        "Une alternative dans le périmètre est proposée"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "J'ai scanné mon cours en PDF, tu peux l'adapter ?",
+      "expected_output": "La skill détecte l'absence de texte extractible, l'explique en langage simple, et ne produit pas de document vide. Elle propose une alternative concrète plutôt que de s'arrêter là.",
+      "files": [
+        "cours-scanne.pdf"
+      ],
+      "assertions": [
+        "Aucun document de sortie vide n'est produit",
+        "L'absence de texte extractible est signalée en langage simple"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Je suis dyscalculique, ce chapitre de statistiques est illisible avec tous ces pourcentages et ces tableaux.",
+      "expected_output": "La skill applique le traitement des chiffres (groupes espacés, distinction 3/8 et 1/7), découpe les tableaux de plus de trois colonnes, et NE reformule PAS les valeurs numériques. Le fichier de contrôle montre qu'aucun chiffre n'a été modifié.",
+      "files": [
+        "chapitre-statistiques.docx"
+      ],
+      "assertions": [
+        "Aucune valeur numérique du document n'est modifiée",
+        "Les tableaux de plus de trois colonnes sont découpés ou signalés",
+        "Le fichier de sortie s'ouvre sans erreur (validate.py passe)",
+        "Les images et tableaux du document d'origine sont tous présents",
+        "Toute modification de texte est encadrée par une modification suivie"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "C'est la première fois que j'utilise ça. Je suis dyslexique, mais je suis crevé, j'ai pas envie de répondre à trente questions.",
+      "expected_output": "La skill annonce le nombre de questions et la possibilité de s'arrêter à tout moment. Elle pose les questions par groupes de trois avec un compteur de position. Si l'utilisateur s'arrête, elle complète avec des réglages courants et le dit, sans insister ni culpabiliser.",
+      "files": [],
+      "assertions": [
+        "Le nombre de questions est annoncé avant de commencer",
+        "Les questions sont posées par groupes de trois avec un compteur",
+        "L'arrêt anticipé est accepté sans relance ni insistance"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Dans ce chapitre il y a un paragraphe qui liste les six causes de la Révolution française, mais c'est écrit d'un bloc. Tu peux m'aider à les retenir ?",
+      "expected_output": "La skill sort la liste enfouie, la numérote (six éléments comptables), et la groupe par trois. Si l'option mnémotechnique est active, l'aide ajoutée est dans un encadré distinct, explicitement signalée comme ajoutée par l'outil, et consignée dans le fichier de contrôle. Aucun mot du cours n'est modifié.",
+      "files": [
+        "chapitre-revolution.docx"
+      ],
+      "assertions": [
+        "La liste enfouie est sortie et numérotée",
+        "Le nombre total d'éléments est visible",
+        "Tout mnémotechnique ajouté est un commentaire Word, pas du corps de texte",
+        "Le fichier de sortie s'ouvre sans erreur (validate.py passe)",
+        "Les images et tableaux du document d'origine sont tous présents",
+        "Toute modification de texte est encadrée par une modification suivie"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Je crois que je suis dyslexique mais j'ai jamais été testée. Je sais juste que je relis trois fois la même ligne. Tu peux m'arranger ce cours ?",
+      "expected_output": "La skill n'exige aucun diagnostic. Elle entre par la difficulté décrite (perte de ligne), ouvre la branche déchiffrage, et ne renvoie jamais l'étiquette « dyslexie » à l'utilisatrice qui ne l'a pas revendiquée. Le questionnaire reste court : socle plus une branche.",
+      "files": [
+        "cours.docx"
+      ],
+      "assertions": [
+        "Aucun diagnostic n'est exigé pour continuer",
+        "Le mot dyslexie n'est pas asséné comme étiquette à l'utilisatrice",
+        "Seules les branches correspondant aux difficultés déclarées sont posées",
+        "Aucune question sur les chiffres ou les tableaux n'est posée"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "J'ai une dyscalculie. Vas-y pour le questionnaire.",
+      "expected_output": "La progression du questionnaire est figurée visuellement plutôt que par des nombres. La branche chiffres est ouverte, la branche déchiffrage ne l'est pas.",
+      "files": [],
+      "assertions": [
+        "La progression n'est pas exprimée par un compteur chiffré",
+        "La branche chiffres est posée",
+        "Les branches non concernées ne sont pas posées"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Ok pour le questionnaire, mais explique-moi d'abord pourquoi tu me demandes tout ça.",
+      "expected_output": "Aucune question du questionnaire ne demande à l'utilisateur d'évaluer un réglage technique (police, interligne, teinte, espacement). Chaque question porte soit sur une situation vécue, soit sur un choix entre deux exemples montrés. Toutes les réponses sont à cocher.",
+      "files": [],
+      "assertions": [
+        "Aucune question ne demande d'évaluer un paramètre typographique",
+        "Aucune question n'attend une réponse en texte libre",
+        "Les questions sur l'apparence montrent des exemples plutôt que de les décrire",
+        "Les questions portent sur des situations que l'utilisateur a vécues"
+      ]
+    }
+  ],
+  "assertions_globales": [
+    "Le fichier de sortie s'ouvre sans erreur (validate.py passe)",
+    "Les images et tableaux du document d'origine sont tous présents",
+    "Toute modification de texte est encadrée par une modification suivie"
+  ]
+}
