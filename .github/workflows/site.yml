@@ -1,0 +1,29 @@
+name: landing
+on:
+  pull_request:
+    paths: ['site/**', 'package*.json', 'SKILL.md', 'scripts/**', 'references/**', 'README.md', 'LICENSE', '.github/workflows/site.yml']
+  push:
+    branches: [main]
+    paths: ['site/**', 'package*.json', 'SKILL.md', 'scripts/**', 'references/**', 'README.md', 'LICENSE', '.github/workflows/site.yml']
+permissions:
+  contents: read
+jobs:
+  puzzle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check site/dist/app.js
+      - run: npm ci
+      - run: python3 site/packager-skill.py --check
+      - run: npm run build
+      - run: npm test
+      - name: Préparer les fichiers pour Hostinger
+        run: python3 site/packager.py /tmp/dyspositif-hostinger.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dyspositif-hostinger
+          path: dist/*
+          if-no-files-found: error
