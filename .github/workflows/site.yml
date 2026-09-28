@@ -1,0 +1,19 @@
+name: landing
+on:
+  pull_request:
+    paths: ['site/**', '.github/workflows/site.yml']
+  push:
+    branches: [main]
+    paths: ['site/**', '.github/workflows/site.yml']
+permissions:
+  contents: read
+jobs:
+  puzzle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check site/dist/app.mjs
+      - run: node --test site/tests/puzzle.test.mjs
