@@ -3,7 +3,7 @@ import argparse
 from pathlib import Path
 from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 root = Path(__file__).resolve().parent.parent
-archive = root / 'site/dist/dyspositif-skill.zip'
+archive = root / 'site/public/dyspositif-skill.zip'
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--check', action='store_true')
 args = parser.parse_args()
