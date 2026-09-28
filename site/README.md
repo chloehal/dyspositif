@@ -21,35 +21,68 @@ Les consignes sur la conservation intégrale, les refus et l’essai sur extrait
 ## Vérification
 
 ```sh
-node --test site/tests/puzzle.test.mjs
-node --check site/dist/app.js
+npm ci
+npm run build
+npm test
+python3 site/packager-skill.py --check
 ```
 
-9 tests couvrent notamment les 1 024 combinaisons de besoins, les refus, le retrait des choix, la stabilité de l’ordre et les entrées invalides. Test manuel du parcours complet et de la copie exacte dans le navigateur, affichage ordinateur et mobile. Ce n’est pas une certification d’accessibilité ; des essais avec les personnes concernées restent nécessaires.
+Les tests couvrent notamment les 1 024 combinaisons de besoins, les refus, le retrait des choix, la stabilité de l’ordre et les entrées invalides. Test manuel du parcours complet et de la copie exacte dans le navigateur, affichage ordinateur et mobile. Ce n’est pas une certification d’accessibilité ; des essais avec les personnes concernées restent nécessaires.
 
 Le site expose, lorsque disponible, un outil WebMCP de lecture seule `read_assembled_prompt`, sur le même résultat que le champ visible. Il ne génère pas de texte et ne transmet pas le formulaire à un service distant.
 
+## La skill au premier plan
+
+La landing présente la skill avant le générateur : téléchargement de `dyspositif-skill.zip`, installation, exemple de demande avec une synthèse DOCX et essai sur extrait. Le générateur reste un avant-goût facultatif. Le parcours Claude est sourcé dans la page ; l’import et l’utilisation sur un compte Claude réel n’ont pas été testés dans cette intervention.
+
+Le ZIP contient `dyspositif/SKILL.md`, les scripts Python, les références, le README et la licence. Il correspond aux sources de la refonte, sans documents personnels. Après modification de la skill, le régénérer avant de publier :
+
+```sh
+python3 site/packager-skill.py
+python3 site/packager-skill.py --check
+```
+
+Le contrôle CI échoue si l’archive ne correspond plus aux sources. Les outils externes de rendu et de validation ne sont pas inclus dans ce ZIP : l’agent doit vérifier leur disponibilité et signaler les limites.
+
 ## Publication autonome sur Hostinger
 
-Les quatre fichiers de `site/dist/` sont prêts à servir tels quels :
-`index.html`, `styles.css`, `app.js` et `puzzle.js`. Aucune compilation,
-installation de dépendances, clé API ou base de données n’est nécessaire.
-`package.json` sert uniquement aux tests locaux ; ne pas le téléverser.
+Le `package.json` et le `package-lock.json` sont **à la racine du dépôt**. Le site utilise Node.js 22 ou plus, sans dépendance npm.
 
-1. Dans le gestionnaire de fichiers du domaine, ouvrir son dossier `public_html`.
-2. Y déposer le **contenu** de `site/dist/`, avec `index.html` directement à la racine. Conserver une copie de tout site existant avant de remplacer ses fichiers.
-3. Ouvrir le domaine en HTTPS, sélectionner plusieurs besoins puis vérifier la copie du prompt.
+```sh
+npm ci
+npm run build
+npm start
+```
 
-Cette procédure vise l’hébergement de fichiers HTML, et non l’éditeur Hostinger Website Builder. Voir la [documentation Hostinger sur le gestionnaire de fichiers](https://www.hostinger.com/support/4548688-basic-actions-in-the-file-manager-in-hostinger/).
+`build` copie les fichiers publics et le ZIP de la skill dans `dist/` à la racine. `start` sert uniquement ces fichiers et écoute le port fourni par `PORT`. Pour le développement : `npm run dev` sert directement `site/dist/`.
 
-### Archive prête à déposer
+### Import du dépôt comme application Node.js
 
-Depuis la racine du dépôt :
+Sur une offre Hostinger prenant en charge les applications Node.js, utiliser :
+
+| Réglage | Valeur |
+|---|---|
+| Racine du projet | Racine du dépôt (`.`) |
+| Type de framework | Other / Autre |
+| Version Node.js | 22 ou plus |
+| Installation | `npm ci` |
+| Construction | `npm run build` |
+| Dossier de sortie | `dist` |
+| Démarrage | `npm start` |
+| Fichier d’entrée, si demandé | `site/server.mjs` |
+
+Hostinger documente le type « Other » et les réglages à adapter dans son [guide Node.js](https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/). Ces commandes sont vérifiées localement ; aucun déploiement sur le compte Hostinger de la mainteneuse n’a été effectué.
+
+### Hébergement statique par gestionnaire de fichiers
+
+Il est aussi possible de déposer le contenu de `dist/` dans le dossier public du domaine, avec `index.html` à la racine. Les cinq fichiers incluent le téléchargement de la skill. Ne pas déposer les sources du serveur ni `package.json` dans le dossier public. Voir le [guide du gestionnaire de fichiers Hostinger](https://www.hostinger.com/support/4548688-basic-actions-in-the-file-manager-in-hostinger/).
+
+### Archive et CI
 
 ```sh
 python3 site/packager.py /tmp/dyspositif-hostinger.zip
 ```
 
-L’archive contient uniquement les quatre fichiers publics, sans dossier intermédiaire. Le workflow GitHub « landing » fournit aussi ces fichiers dans l’artefact `dyspositif-hostinger`, téléchargeable depuis une exécution réussie dans Actions.
+Cette archive est destinée à l’hébergement **statique** ; pour l’import Node.js, connecter le dépôt complet contenant le `package.json` racine. L’artefact GitHub Actions `dyspositif-hostinger` fournit les fichiers statiques après vérification.
 
-Le dépôt ne déclenche aucun déploiement : la publication sur Hostinger reste manuelle. L’ancien aperçu privé est indépendant et n’est pas mis à jour par ce workflow.
+Aucun workflow ne déploie le site. La publication reste à la main de la mainteneuse. L’ancien aperçu privé est indépendant et n’est pas actualisé par cette PR.

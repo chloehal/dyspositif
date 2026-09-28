@@ -7,7 +7,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('archive', type=Path)
 args = parser.parse_args()
 source = Path(__file__).resolve().parent / 'dist'
-fichiers = ['index.html', 'styles.css', 'app.js', 'puzzle.js']
+fichiers = ['index.html', 'styles.css', 'app.js', 'puzzle.js', 'dyspositif-skill.zip']
 # Lire toutes les sources avant de créer l’archive pour éviter un résultat partiel.
 contenus = {nom: (source / nom).read_bytes() for nom in fichiers}
 if args.archive.resolve().is_relative_to(source):

@@ -1,0 +1,16 @@
+{
+  "name": "dyspositif-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node site/build.mjs",
+    "start": "node site/server.mjs",
+    "dev": "node site/server.mjs --dev",
+    "test": "node --test site/tests/*.test.mjs"
+  },
+  "main": "site/server.mjs"
+}

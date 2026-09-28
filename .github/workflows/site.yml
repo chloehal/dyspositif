@@ -1,10 +1,10 @@
 name: landing
 on:
   pull_request:
-    paths: ['site/**', '.github/workflows/site.yml']
+    paths: ['site/**', 'package*.json', 'SKILL.md', 'scripts/**', 'references/**', 'README.md', 'LICENSE', '.github/workflows/site.yml']
   push:
     branches: [main]
-    paths: ['site/**', '.github/workflows/site.yml']
+    paths: ['site/**', 'package*.json', 'SKILL.md', 'scripts/**', 'references/**', 'README.md', 'LICENSE', '.github/workflows/site.yml']
 permissions:
   contents: read
 jobs:
@@ -16,11 +16,14 @@ jobs:
         with:
           node-version: '22'
       - run: node --check site/dist/app.js
-      - run: node --test site/tests/puzzle.test.mjs
+      - run: npm ci
+      - run: python3 site/packager-skill.py --check
+      - run: npm run build
+      - run: npm test
       - name: Préparer les fichiers pour Hostinger
         run: python3 site/packager.py /tmp/dyspositif-hostinger.zip
       - uses: actions/upload-artifact@v4
         with:
           name: dyspositif-hostinger
-          path: site/dist/*
+          path: dist/*
           if-no-files-found: error
