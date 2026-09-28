@@ -22,6 +22,27 @@ def ecrire(chemin, source, sortie, profil, faits, reviseur, validation=None):
     ajouter("- Profil appliqué : %s" % module_profil.resume(profil))
     ajouter("")
 
+    ajouter("## Choix et limites")
+    ajouter("")
+    for cle, decision in sorted(profil.get("decisions", {}).items()):
+        ajouter("- %s = %s (%s ; %s)" % (cle, decision["valeur"], decision["etat"], decision["origine"]))
+    for conflit in faits.get("conflits", []):
+        ajouter("- Arbitrage : %s — %s (%s)" % (conflit["parametre"], conflit["raison"], conflit["action"]))
+    if profil.get("propositions"):
+        ajouter("- Propositions non appliquées : " + ", ".join(sorted(profil["propositions"])))
+    ajouter("- La reformulation n’est pas exécutée par appliquer ; elle nécessite une intervention suivie et une comparaison du sens.")
+    ajouter("")
+    audit = faits.get("accessibilite", {})
+    if audit:
+        ajouter("## Accessibilité à vérifier")
+        ajouter("")
+        for alerte in audit.get("alertes", []):
+            ajouter("- %s : %s" % (alerte["code"], alerte["detail"]))
+        for point in audit.get("verification_humaine", []):
+            ajouter("- " + point)
+        ajouter("Ce contrôle n’est pas une certification d’accessibilité.")
+        ajouter("")
+
     ajouter("## Mise en forme (aucun mot touché)")
     ajouter("")
     if faits.get("forme"):
@@ -94,13 +115,13 @@ def ecrire(chemin, source, sortie, profil, faits, reviseur, validation=None):
     ajouter("")
     if ajouts:
         ajouter(
-            "Ces éléments ne viennent pas du cours. Ils sont en commentaires Word, "
+            "Ces éléments ne viennent pas du synthèse. Ils sont en commentaires Word, "
             "jamais dans le corps du texte, et se suppriment d'un clic."
         )
         for entree in ajouts:
             ajouter("- paragraphe %s : %s" % (entree.get("index"), entree["detail"]))
     else:
-        ajouter("Aucun. Rien n'a été ajouté au contenu du cours.")
+        ajouter("Aucun. Rien n'a été ajouté au contenu du synthèse.")
     ajouter("")
 
     if validation is not None:
@@ -108,7 +129,7 @@ def ecrire(chemin, source, sortie, profil, faits, reviseur, validation=None):
         ajouter("")
         ajouter(
             "`validate.py --original --author %s` : %s"
-            % (reviseur.auteur, "passé" if validation[0] else "ÉCHEC")
+            % (reviseur.auteur, "passé" if validation[0] is True else ("NON EXÉCUTÉ" if validation[0] is None else "ÉCHEC"))
         )
         if not validation[0] and validation[1]:
             ajouter("")

@@ -45,6 +45,8 @@ def traiter(document, dossier, reviseur, profil):
     maxi = int(profil.get("tableaux", {}).get("max_colonnes", 3))
     action = profil.get("tableaux", {}).get("action", "signaler")
     resultats = []
+    if action == "conserver":
+        return resultats
     for infos in inventaire(document):
         if infos["colonnes"] <= maxi:
             continue
@@ -59,9 +61,9 @@ def traiter(document, dossier, reviseur, profil):
                 if infos["fusions"]
                 else "signalé sans découpage"
             )
-            signaler(document, dossier, infos, raison)
+            commentaire_pose = signaler(document, dossier, infos, raison)
             resultats.append(
-                {"index": infos["index"], "action": "signalé", "raison": raison}
+                {"index": infos["index"], "action": "signalé" if commentaire_pose else "à vérifier (commentaire indisponible)", "raison": raison}
             )
         reviseur.noter(
             "tableau",

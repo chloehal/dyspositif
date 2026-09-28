@@ -28,43 +28,62 @@ LETTRES_MIROIR = "bdpq"
 CHIFFRES_CONFONDUS = "38 17"
 
 
+def contraste(texte, fond):
+    def luminance(couleur):
+        rgb = [int(couleur[i:i+2], 16) / 255 for i in (0, 2, 4)]
+        rgb = [v / 12.92 if v <= .04045 else ((v + .055) / 1.055) ** 2.4 for v in rgb]
+        return sum(v * poids for v, poids in zip(rgb, (.2126, .7152, .0722)))
+    bas, haut = sorted((luminance(texte), luminance(fond)))
+    return (haut + .05) / (bas + .05)
+
+
+def couleur_texte(profil):
+    choisie = profil.get("couleur_texte", "auto")
+    return FONDS[profil["fond"]][1] if choisie == "auto" else choisie
+
+
 def couleur_libre(profil, souhaitee):
-    """Ne jamais reprendre une couleur que l'utilisateur a déjà affectée."""
+    """Couleur ajoutée : contraste >= 4.5 et aucun code personnel réutilisé."""
     prises = {v.upper() for v in (profil.get("couleurs_utilisateur") or {}).values()}
-    if souhaitee and souhaitee.upper() not in prises:
-        return souhaitee.upper()
-    for candidate in PALETTE_LIBRE:
-        if candidate not in prises:
-            return candidate
-    return souhaitee
+    fond = profil.get("fond_effectif", FONDS[profil["fond"]][0])
+    for candidate in [souhaitee] + PALETTE_LIBRE + ["FDBA74", "C4B5FD", "6EE7B7", "FDE68A", "F9A8D4", "93C5FD", "FFFFFF", "000000"]:
+        if candidate and candidate.upper() not in prises and contraste(candidate, fond) >= 4.5:
+            return candidate.upper()
+    raise ValueError("Aucune teinte disponible : conserver le texte sans repère coloré.")
+
+
+def _actif(profil, cle):
+    return profil.get("decisions", {}).get(cle, {}).get("etat") in ("valide", "refuse", "essai")
 
 
 def appliquer(document, dossier, profil, rapport=None):
-    """Applique tout le degré « mise en forme ». Renvoie le compte des changements."""
-    faits = {}
+    """Ne modifier que les propriétés choisies ou explicitement essayées."""
+    profil = copy.deepcopy(profil)
+    fond = document.racine.find(q("w:background"))
+    profil["fond_effectif"] = (FONDS[profil["fond"]][0] if _actif(profil, "fond") else
+                              fond.get(q("w:color"), "FFFFFF") if fond is not None else "FFFFFF")
+    if not re.fullmatch(r"[0-9A-Fa-f]{6}", profil["fond_effectif"]):
+        raise ValueError("Fond de page non résolu : vérifier la couleur effective avant adaptation.")
     ancienne_taille = _taille_par_defaut(dossier)
-    ratio = float(profil["taille_pt"]) / ancienne_taille if ancienne_taille else 1.0
-
-    faits["styles"] = _styles(dossier, profil, ratio)
-    faits["formatage_direct"] = _neutraliser_formatage_direct(document, profil, ratio)
-    faits["marges"] = _longueur_de_ligne(document, profil)
-    faits["fond"] = _fond(document, dossier, profil)
-    faits["air"] = _air_proportionnel(document, profil)
-    if profil.get("filet_section"):
-        faits["filets"] = _filets_de_section(document)
-    if profil.get("lettres_miroir", {}).get("actif"):
-        faits["lettres_miroir"] = _teinter(
-            document,
-            LETTRES_MIROIR,
-            couleur_libre(profil, profil["lettres_miroir"].get("teinte", "C2410C")),
-        )
-    if profil.get("chiffres", {}).get("paires"):
-        faits["paires_chiffres"] = _teinter(
-            document,
-            CHIFFRES_CONFONDUS.replace(" ", ""),
-            couleur_libre(profil, profil["chiffres"].get("teinte", "0B6E4F")),
-            chiffres=True,
-        )
+    ratio = float(profil["taille_pt"]) / ancienne_taille if ancienne_taille and _actif(profil, "taille_pt") else 1.0
+    faits = {"styles": _styles(dossier, profil, ratio),
+             "formatage_direct": _neutraliser_formatage_direct(document, profil, ratio)}
+    if _actif(profil, "longueur_ligne") or _actif(profil, "marge_annotation"):
+        # Calcul de marge sur la taille réelle si aucun nouveau corps choisi.
+        geometrie = dict(profil)
+        if not _actif(profil, "taille_pt"):
+            geometrie["taille_pt"] = ancienne_taille
+        faits["marges"] = _longueur_de_ligne(document, geometrie)
+    if _actif(profil, "fond"):
+        faits["fond"] = _fond(document, dossier, profil)
+    if _actif(profil, "air_proportionnel"):
+        faits["air"] = _air_proportionnel(document, profil)
+    if profil.get("filet_section") and _actif(profil, "filet_section"):
+        faits["filets"] = _filets_de_section(document, profil)
+    if profil.get("lettres_miroir", {}).get("actif") and _actif(profil, "lettres_miroir.actif"):
+        faits["lettres_miroir"] = _teinter(document, LETTRES_MIROIR, couleur_libre(profil, profil["lettres_miroir"]["teinte"]))
+    if profil.get("chiffres", {}).get("paires") and _actif(profil, "chiffres.paires"):
+        faits["paires_chiffres"] = _teinter(document, CHIFFRES_CONFONDUS.replace(" ", ""), couleur_libre(profil, profil["chiffres"]["teinte"]), chiffres=True)
     return faits
 
 
@@ -88,67 +107,61 @@ def _taille_par_defaut(dossier):
     return 11.0
 
 
+def _regler_rpr(rpr, profil, ratio, defaut=False):
+    if _actif(profil, "police"):
+        police = rpr.find(q("w:rFonts"))
+        if (police is not None and not _est_symbole(police)) or (police is None and defaut):
+            police = poser_enfant(rpr, "w:rFonts", ORDRE_RPR, ascii=profil["police"], hAnsi=profil["police"], cs=profil["police"])
+            for attr in ("asciiTheme", "hAnsiTheme", "cstheme"):
+                police.attrib.pop(q("w:" + attr), None)
+    if _actif(profil, "taille_pt"):
+        for nom in ("w:sz", "w:szCs"):
+            taille = rpr.find(q(nom))
+            if taille is not None and (taille.get(q("w:val")) or "").isdigit():
+                taille.set(q("w:val"), str(_arrondir_taille(taille, ratio)))
+            elif defaut:
+                poser_enfant(rpr, nom, ORDRE_RPR, val=int(round(profil["taille_pt"]*2)))
+    if _actif(profil, "espacement_lettres_pt"):
+        poser_enfant(rpr, "w:spacing", ORDRE_RPR, val=int(round(profil["espacement_lettres_pt"] * 20)))
+    if defaut and (_actif(profil, "fond") or _actif(profil, "couleur_texte")):
+        poser_enfant(rpr, "w:color", ORDRE_RPR, val=couleur_texte(profil))
+
+
+def _regler_ppr(ppr, profil):
+    if _actif(profil, "interligne"):
+        poser_enfant(ppr, "w:spacing", ORDRE_PPR, line=int(round(profil["interligne"]*240)), lineRule="auto")
+    if _actif(profil, "alignement") and profil["alignement"] == "gauche":
+        poser_enfant(ppr, "w:jc", ORDRE_PPR, val="left")
+
+
 def _styles(dossier, profil, ratio):
     chemin = _chemin_styles(dossier)
     if not chemin.is_file():
         return 0
-    arbre = ooxml.lire_fichier(chemin)
-    racine = arbre.getroot()
-    demi_points = int(round(profil["taille_pt"] * 2))
-    interligne = int(round(float(profil["interligne"]) * 240))
-    espacement_lettres = int(round(float(profil.get("espacement_lettres_pt", 0)) * 20))
-
+    fichier = ooxml.Document(chemin)
+    racine = fichier.racine
     defauts = racine.find(q("w:docDefaults"))
     if defauts is None:
         defauts = ET.Element(q("w:docDefaults"))
         racine.insert(0, defauts)
-
-    rpr_defaut = defauts.find("./%s/%s" % (q("w:rPrDefault"), q("w:rPr")))
-    if rpr_defaut is None:
-        parent = defauts.find(q("w:rPrDefault"))
+    for parent_nom, nom, regler in [("w:rPrDefault", "w:rPr", lambda p: _regler_rpr(p, profil, ratio, True)),
+                                    ("w:pPrDefault", "w:pPr", lambda p: _regler_ppr(p, profil))]:
+        parent = defauts.find(q(parent_nom))
         if parent is None:
-            parent = ET.SubElement(defauts, q("w:rPrDefault"))
-        rpr_defaut = ET.SubElement(parent, q("w:rPr"))
-    poser_enfant(rpr_defaut, "w:rFonts", ORDRE_RPR,
-                 ascii=profil["police"], hAnsi=profil["police"], cs=profil["police"])
-    poser_enfant(rpr_defaut, "w:sz", ORDRE_RPR, val=demi_points)
-    poser_enfant(rpr_defaut, "w:szCs", ORDRE_RPR, val=demi_points)
-    poser_enfant(rpr_defaut, "w:color", ORDRE_RPR, val=FONDS[profil["fond"]][1])
-    if espacement_lettres:
-        poser_enfant(rpr_defaut, "w:spacing", ORDRE_RPR, val=espacement_lettres)
-
-    ppr_defaut = defauts.find("./%s/%s" % (q("w:pPrDefault"), q("w:pPr")))
-    if ppr_defaut is None:
-        parent = defauts.find(q("w:pPrDefault"))
-        if parent is None:
-            parent = ET.SubElement(defauts, q("w:pPrDefault"))
-        ppr_defaut = ET.SubElement(parent, q("w:pPr"))
-    poser_enfant(ppr_defaut, "w:spacing", ORDRE_PPR,
-                 line=interligne, lineRule="auto", after=160, before=0)
-    poser_enfant(ppr_defaut, "w:jc", ORDRE_PPR, val="left")
-
-    touches = 0
+            parent = ET.Element(q(parent_nom))
+            defauts.insert(0 if parent_nom == "w:rPrDefault" else len(defauts), parent)
+        prop = parent.find(q(nom))
+        if prop is None:
+            prop = ET.SubElement(parent, q(nom))
+        regler(prop)
     for style in racine.findall(q("w:style")):
-        rpr = style.find(q("w:rPr"))
-        if rpr is not None:
-            police = rpr.find(q("w:rFonts"))
-            if police is not None and not _est_symbole(police):
-                for attribut in ("ascii", "hAnsi", "cs"):
-                    police.set(q("w:" + attribut), profil["police"])
-                touches += 1
-            for nom in ("w:sz", "w:szCs"):
-                taille = rpr.find(q(nom))
-                if taille is not None and (taille.get(q("w:val")) or "").isdigit():
-                    taille.set(q("w:val"), str(_arrondir_taille(taille, ratio)))
-                    touches += 1
-        ppr = style.find(q("w:pPr"))
-        if ppr is not None:
-            jc = ppr.find(q("w:jc"))
-            if jc is not None and jc.get(q("w:val")) == "both":
-                jc.set(q("w:val"), "left")  # le texte justifié fabrique des rivières
-                touches += 1
-    arbre.write(str(chemin), encoding="UTF-8", xml_declaration=True)
-    return touches
+        rp, pp = style.find(q("w:rPr")), style.find(q("w:pPr"))
+        if rp is not None:
+            _regler_rpr(rp, profil, ratio)
+        if pp is not None:
+            _regler_ppr(pp, profil)
+    fichier.enregistrer()
+    return len(racine.findall(q("w:style")))
 
 
 def _arrondir_taille(element, ratio):
@@ -168,33 +181,19 @@ def _est_symbole(police):
 
 
 def _neutraliser_formatage_direct(document, profil, ratio):
-    """Une taille appliquée à la main l'emporte sur le style : la ramener au profil.
-
-    Un cours récupéré en est truffé — sans cette étape, la moitié du document
-    ignore les réglages.
-    """
     touches = 0
-    demi_points = int(round(profil["taille_pt"] * 2))
     for run in document.racine.iter(q("w:r")):
         proprietes = run.find(q("w:rPr"))
-        if proprietes is None:
-            continue
-        police = proprietes.find(q("w:rFonts"))
-        if police is not None and not _est_symbole(police):
-            for attribut in ("ascii", "hAnsi", "cs"):
-                police.set(q("w:" + attribut), profil["police"])
-            touches += 1
-        for nom in ("w:sz", "w:szCs"):
-            taille = proprietes.find(q(nom))
-            if taille is not None and (taille.get(q("w:val")) or "").isdigit():
-                nouvelle = max(demi_points - 4, _arrondir_taille(taille, ratio))
-                taille.set(q("w:val"), str(nouvelle))
-                touches += 1
-
-    for jc in document.racine.iter(q("w:jc")):
-        if jc.get(q("w:val")) == "both":
-            jc.set(q("w:val"), "left")
-            touches += 1
+        if proprietes is not None:
+            avant = ET.tostring(proprietes)
+            _regler_rpr(proprietes, profil, ratio)
+            touches += avant != ET.tostring(proprietes)
+    if _actif(profil, "interligne") or _actif(profil, "alignement"):
+        for paragraphe in document.paragraphes():
+            prop = ooxml.ppr(paragraphe, True)
+            avant = ET.tostring(prop)
+            _regler_ppr(prop, profil)
+            touches += avant != ET.tostring(prop)
     return touches
 
 
@@ -232,8 +231,6 @@ def _longueur_de_ligne(document, profil):
 def _fond(document, dossier, profil):
     """Le blanc pur fatigue ; le fond sombre n'a de sens que sur écran."""
     couleur, texte = FONDS.get(profil.get("fond", "creme"), FONDS["creme"])
-    if profil.get("support") == "papier":
-        couleur, texte = FONDS["blanc"]
 
     racine = document.racine
     fond = racine.find(q("w:background"))
@@ -283,7 +280,7 @@ def _air_proportionnel(document, profil):
     return touches
 
 
-def _filets_de_section(document):
+def _filets_de_section(document, profil):
     """Un trait coloré en marge par grande partie : savoir où l'on est sans relire le titre."""
     touches = 0
     rang = -1
@@ -299,7 +296,7 @@ def _filets_de_section(document):
             continue
         if valeur.endswith("1"):
             rang += 1
-        couleur = PALETTE_FILETS[max(0, rang) % len(PALETTE_FILETS)]
+        couleur = couleur_libre(profil, PALETTE_FILETS[max(0, rang) % len(PALETTE_FILETS)])
         proprietes = ooxml.ppr(paragraphe, creer_si_absent=True)
         bordures = proprietes.find(q("w:pBdr"))
         if bordures is None:
@@ -340,6 +337,19 @@ def _teinter(document, caracteres, couleur, chiffres=False):
         enfants = [e for e in run if e.tag != q("w:rPr")]
         if len(enfants) != 1 or enfants[0].tag != q("w:t"):
             continue
+        ancetre = parents.get(id(run))
+        protege = False
+        while ancetre is not None:
+            if ancetre.tag == q("w:p") and ancetre.find("./" + q("w:pPr") + "/" + q("w:pStyle")) is not None:
+                protege = True  # Conservateur : style hérité potentiellement sémantique.
+                break
+            ancetre = parents.get(id(ancetre))
+        if protege:
+            continue
+        proprietes = run.find(q("w:rPr"))
+        # Ne pas écraser un code couleur, un surlignage ou un style sémantique.
+        if proprietes is not None and any(proprietes.find(q(n)) is not None for n in ("w:color", "w:highlight", "w:shd", "w:rStyle")):
+            continue
         texte = enfants[0].text or ""
         if not texte or not any(c in cible for c in texte):
             continue
@@ -359,8 +369,6 @@ def _teinter(document, caracteres, couleur, chiffres=False):
             courant += caractere
         if courant:
             morceaux.append((courant, marque_courante))
-        if len(morceaux) == 1:
-            continue
 
         position = list(parent).index(run)
         parent.remove(run)

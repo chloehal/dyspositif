@@ -352,11 +352,15 @@ def _reinjecter_namespaces(sortie, balise_origine):
         return sortie
 
     origine = _declarations(balise_origine)
-    ajoutees = _declarations(balise_sortie)
+    serialisees = _declarations(balise_sortie)
+    # Garder le nom sérialisé de la racine et ses attributs courants : remplacer
+    # par l'ancienne balise ouvre Types mais ferme ns0:Types après sérialisation.
+    # Réintroduire seulement les aliases originaux utilisés par mc:Ignorable.
     manquantes = b"".join(
         b' %s="%s"' % (cle, valeur)
-        for cle, valeur in sorted(ajoutees.items())
-        if cle not in origine
+        for cle, valeur in sorted(origine.items())
+        if cle not in serialisees
     )
-    remplacement = balise_origine[:-1] + manquantes + b">"
+    fermeture = b"/>" if balise_sortie.endswith(b"/>") else b">"
+    remplacement = balise_sortie[:-len(fermeture)] + manquantes + fermeture
     return sortie.replace(balise_sortie, remplacement, 1)

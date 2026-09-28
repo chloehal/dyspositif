@@ -2,7 +2,7 @@
 
 ## Ce que cet outil manipule
 
-Des cours. C'est-à-dire des fichiers venant de tiers — un prof, un camarade,
+Des synthèses existantes. C'est-à-dire des fichiers venant de tiers — un prof, un camarade,
 une plateforme de cours — ouverts sur la machine de quelqu'un d'autre. Un
 `.docx` est une archive zip contenant du XML : les deux formats ont une longue
 histoire d'abus.
@@ -23,19 +23,23 @@ histoire d'abus.
 
 ## Ce qui sort de la machine
 
-**Rien.** Aucun appel réseau, aucune télémétrie, aucun envoi de document. Les
+**Le moteur Python ne fait aucun appel réseau et n’envoie aucun document.**
+L’agent qui utilise la skill peut traiter le contenu via son fournisseur : ses
+conditions de confidentialité s’appliquent séparément. Ne pas promettre que
+l’ensemble du parcours de l’agent reste local. Les
 seuls fichiers écrits sont : le document produit, son fichier de contrôle, et
-le profil dans `~/.dyspositif/profil.json` (ou le chemin de
-`DYSPOSITIF_PROFIL`).
+les extraits de calibration, les copies de structure et le profil dans `~/.dyspositif/profil.json` (ou le chemin de
+`DYSPOSITIF_PROFIL`). Les contextes nommés ajoutent un suffixe au fichier ;
+les supprimer avec `profil --contexte NOM --oublier`. Ne pas publier ces profils.
 
 Le profil contient des informations sur les difficultés de lecture de la
-personne. C'est une donnée de santé au sens du RGPD : elle reste locale, et
-elle se supprime avec `python scripts/dys.py profil --oublier`.
+personne. Ces informations peuvent être sensibles. Le fichier du moteur reste local et
+se supprime avec `python scripts/dys.py profil --oublier`.
 
 ## Limites connues
 
 - Les documents produits **conservent les métadonnées d'origine** (auteur,
-  organisation). Si tu partages un cours adapté, ce sont celles du prof.
+  organisation). Si tu partages une synthèse adaptée, ce sont celles du prof.
 - Le nom d'auteur des modifications suivies est « dyspositif » par défaut, mais
   `--auteur` accepte n'importe quoi. Rien n'est vérifié.
 - L'outil ne chiffre rien : les documents temporaires passent par le dossier

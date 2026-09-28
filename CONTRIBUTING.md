@@ -8,7 +8,7 @@ quelles règles elles sont acceptées.
 
 1. **Fork** le dépôt (bouton *Fork* en haut de la page GitHub).
 2. **Une branche par sujet** : `git checkout -b sortie-des-chronologies`.
-3. **Les tests doivent passer** : `python3 tests/test_dys.py`.
+3. **Les tests doivent passer** : `python3 tests/run.py`.
 4. **Ouvre une pull request** vers `main`. L'intégration continue rejoue les
    tests automatiquement.
 5. **La fusion est faite par la mainteneuse** (Chloé Halloin). Personne d'autre
@@ -23,25 +23,27 @@ que c'est la formulation qui fait abandonner les gens.
 
 - Corrections de bugs accompagnées d'un test qui échouait avant.
 - Formulations de questions plus claires, plus courtes, moins jargonneuses.
-- Nouvelles correspondances dans `references/troubles.md`, si elles reposent sur
-  du vécu ou sur une source.
+- Améliorations des questions par besoins et des essais sur des synthèses réelles.
+  Un diagnostic ne doit jamais activer automatiquement un réglage.
 - Traductions des messages, tant que le vocabulaire reste simple.
 - Documentation.
 
 ## Ce qui sera discuté avant
 
-- **Un nouveau degré d'intervention** (au-delà des cinq existants). Il faut
+- **Un nouveau degré d'intervention**. Il faut
   d'abord répondre à : est-ce que le document de sortie contient toujours
   *toute* l'information du document d'entrée ?
 - **Une dépendance nouvelle.** L'outil tourne aujourd'hui avec la bibliothèque
   standard de Python. Chaque dépendance ajoutée est une chose de plus à
-  installer pour quelqu'un qui veut juste lire son cours.
+  installer pour quelqu'un qui veut juste lire sa synthèse.
 - **Un changement du parcours en six étapes.** Les conditions de sortie sont ce
   qui empêche de produire quarante pages que personne ne voulait.
 
 ## Ce qui sera refusé
 
-- **Le résumé, la synthèse, la fiche, la carte mentale, l'audio.** Le critère :
+- **Créer une synthèse, résumer un cours ou inventer un support pédagogique.**
+  La lecture vocale intégrale est une modalité d’accès ; elle n’est pas assimilée
+  à un résumé. Le critère :
   *le document de sortie contient-il toute l'information du document d'entrée ?*
   Si non, c'est un autre outil — un bon outil peut-être, mais pas celui-ci.
 - **Toute modification du texte qui ne passe pas par les modifications
@@ -72,9 +74,9 @@ que c'est la formulation qui fait abandonner les gens.
 
 C'est au moins aussi utile :
 
-- **Raconter ce qui te gêne** quand tu lis un cours, et ce que tu fais pour t'en
+- **Raconter ce qui te gêne** quand tu lis une synthèse, et ce que tu fais pour t'en
   sortir. Le questionnaire est fait de ça.
-- **Tester la skill sur tes propres cours** et dire ce qui rate.
+- **Tester la skill sur tes propres synthèses** et dire ce qui rate.
 - **Relire les questions** : est-ce qu'elles se répondent en une seconde ?
   est-ce qu'elles supposent de savoir ce qu'est un interligne ?
 

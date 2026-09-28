@@ -1,231 +1,729 @@
 {
-  "annonce": "Cinq questions, plus quelques-unes selon tes réponses. Tu peux t'arrêter quand tu veux, je prends des réglages courants pour le reste.",
+  "annonce": "Quelques choix sur ta synthèse. Tu peux t'arrêter quand tu veux ou expliquer autrement.",
   "regles": [
-    "Toujours des réponses à cocher, jamais de champ libre.",
-    "Partir d'une situation vécue, jamais d'un réglage technique.",
-    "Montrer deux ou trois versions du même paragraphe plutôt que de décrire.",
-    "Poser les questions par groupes de trois, avec la position dans le parcours.",
-    "Ne poser que les branches correspondant aux difficultés déclarées."
+    "Recevoir la synthèse avant de montrer des variantes.",
+    "Utiliser les réponses déjà données ; ne pas poser tout le catalogue.",
+    "Un diagnostic ne vaut ni besoin ni autorisation.",
+    "Choix courts et explication libre facultative, y compris dictée.",
+    "Comparer au plus deux variantes à la fois sur le même extrait.",
+    "Les questions de vécu produisent des propositions, les refus verrouillent le choix.",
+    "Un besoin non prévu ouvre une question libre facultative, jamais une exclusion."
   ],
   "socle": [
     {
       "id": "q1_gene",
-      "question": "Quand tu lis un document, qu'est-ce qui te gêne le plus ?",
-      "multiple": true,
-      "note": "Première question posée sans adaptation préalable : courte, concrète, sans jargon.",
+      "question": "Dans ta synthèse, qu'est-ce qui te gêne ?",
       "options": [
-        {"cle": "ligne", "libelle": "Je perds ma ligne, je relis la même phrase"},
-        {"cle": "lettres", "libelle": "Je confonds des lettres qui se ressemblent"},
-        {"cle": "attention", "libelle": "Je décroche, je pense à autre chose"},
-        {"cle": "chiffres", "libelle": "Les chiffres et les tableaux me perdent"},
-        {"cle": "reperage", "libelle": "Je ne sais pas où regarder sur la page"},
-        {"cle": "fatigue", "libelle": "Je lis bien, c'est juste fatigant"},
-        {"cle": "diagnostic", "libelle": "Je connais mon diagnostic, je préfère le dire"}
+        {
+          "cle": "ligne",
+          "libelle": "Suivre les lignes"
+        },
+        {
+          "cle": "lettres",
+          "libelle": "Reconnaître les mots ou les lettres"
+        },
+        {
+          "cle": "comprehension",
+          "libelle": "Comprendre les phrases ou les liens entre les idées"
+        },
+        {
+          "cle": "attention",
+          "libelle": "Rester concentré ou reprendre après une pause"
+        },
+        {
+          "cle": "memoire",
+          "libelle": "Garder plusieurs informations en tête"
+        },
+        {
+          "cle": "chiffres",
+          "libelle": "Lire les nombres, symboles ou tableaux"
+        },
+        {
+          "cle": "vision",
+          "libelle": "Voir le texte ou distinguer les couleurs"
+        },
+        {
+          "cle": "surcharge",
+          "libelle": "Trop de repères en même temps"
+        },
+        {
+          "cle": "reperage",
+          "libelle": "Retrouver une information"
+        },
+        {
+          "cle": "navigation",
+          "libelle": "Naviguer ou manipuler le document"
+        },
+        {
+          "cle": "fatigue",
+          "libelle": "L’effort ou la fatigue"
+        },
+        {
+          "cle": "autre",
+          "libelle": "Autre difficulté"
+        },
+        {
+          "cle": "aucune",
+          "libelle": "Je veux surtout conserver mes habitudes"
+        },
+        {
+          "cle": "inconnu",
+          "libelle": "Je ne sais pas encore"
+        }
       ],
-      "si_diagnostic": {
-        "id": "q1_troubles",
-        "question": "Lequel ?",
-        "multiple": true,
-        "options": [
-          {"cle": "dyslexie", "libelle": "Dyslexie"},
-          {"cle": "dysorthographie", "libelle": "Dysorthographie"},
-          {"cle": "dyscalculie", "libelle": "Dyscalculie"},
-          {"cle": "dyspraxie", "libelle": "Dyspraxie"},
-          {"cle": "tdah", "libelle": "TDAH"},
-          {"cle": "dysphasie", "libelle": "Dysphasie"},
-          {"cle": "trouble_visuel", "libelle": "Trouble visuel"}
-        ]
-      }
+      "multiple": true,
+      "champ_libre_facultatif": true
     },
     {
       "id": "q2_support",
-      "question": "Où est-ce que tu révises le plus souvent ?",
+      "question": "Où vas-tu utiliser cette synthèse ?",
       "options": [
-        {"cle": "ecran", "libelle": "Sur écran"},
-        {"cle": "papier", "libelle": "Sur des feuilles imprimées"},
-        {"cle": "les_deux", "libelle": "Les deux"}
+        {
+          "cle": "ecran",
+          "libelle": "Sur écran"
+        },
+        {
+          "cle": "papier",
+          "libelle": "Sur papier"
+        },
+        {
+          "cle": "les_deux",
+          "libelle": "Les deux"
+        }
       ]
     },
     {
-      "id": "q3_fond",
-      "question": "Laquelle de ces trois pages est la plus reposante pour tes yeux ?",
-      "montrer": {
-        "quoi": "le même paragraphe du cours, trois fois",
-        "variantes": ["fond blanc", "fond crème", "fond sombre"],
-        "ne_pas_dire": "les noms des fonds ni les codes couleur"
-      },
+      "id": "q_acces",
+      "question": "Quel est ton moyen de lecture principal ?",
       "options": [
-        {"cle": "blanc", "libelle": "La première"},
-        {"cle": "creme", "libelle": "La deuxième"},
-        {"cle": "sombre", "libelle": "La troisième"}
-      ]
-    },
-    {
-      "id": "q4_police",
-      "question": "Laquelle de ces versions se lit le plus facilement ?",
-      "montrer": {
-        "quoi": "le même paragraphe du cours, trois fois",
-        "variantes": ["Verdana", "Arial", "OpenDyslexic"],
-        "ne_pas_dire": "les noms des polices"
-      },
-      "options": [
-        {"cle": "a", "libelle": "La première"},
-        {"cle": "b", "libelle": "La deuxième"},
-        {"cle": "c", "libelle": "La troisième"}
-      ]
-    },
-    {
-      "id": "q5_couleurs",
-      "question": "Quand tu prends des notes ou que tu révises, tu utilises des couleurs ?",
-      "options": [
-        {"cle": "systeme", "libelle": "J'ai mes couleurs pour des choses précises"},
-        {"cle": "hasard", "libelle": "Je surligne un peu au hasard"},
-        {"cle": "non", "libelle": "Non"}
+        {
+          "cle": "visuel",
+          "libelle": "Lecture visuelle"
+        },
+        {
+          "cle": "lecteur_ecran",
+          "libelle": "Lecteur d’écran"
+        },
+        {
+          "cle": "vocal",
+          "libelle": "Lecture vocale"
+        },
+        {
+          "cle": "clavier",
+          "libelle": "Navigation au clavier"
+        }
       ],
-      "si_systeme": {
-        "id": "q5_grille",
-        "question": "Quelle couleur pour quoi ? (cocher ce qui s'applique)",
-        "grille": ["definitions", "exemples", "a_retenir", "dates", "auteurs", "exceptions"],
-        "couleurs": ["bleu", "vert", "orange", "rouge", "violet", "jaune", "rose", "gris"],
-        "note": "Le moment le plus important du questionnaire : on récupère un système déjà construit au lieu d'en imposer un."
-      }
+      "champ_libre_facultatif": true,
+      "note": "Noter les autres moyens dans besoin_libre ; ne pas imposer un seul usage."
+    },
+    {
+      "id": "reperes_a_preserver",
+      "question": "Quels repères veux-tu conserver ?",
+      "options": [
+        {
+          "cle": "couleurs",
+          "libelle": "Mes couleurs"
+        },
+        {
+          "cle": "mots",
+          "libelle": "Les formulations exactes"
+        },
+        {
+          "cle": "structure",
+          "libelle": "L’ordre et les regroupements"
+        },
+        {
+          "cle": "autre",
+          "libelle": "Autre repère"
+        },
+        {
+          "cle": "inconnu",
+          "libelle": "Je ne sais pas"
+        }
+      ],
+      "multiple": true,
+      "champ_libre_facultatif": true
     }
   ],
   "branches": {
     "dechiffrage": [
       {
         "id": "d1_relire",
-        "question": "Ça t'arrive de relire une ligne parce que tu l'as sautée ou refaite ?",
+        "question": "Tu perds ta ligne ou tu relis la même ?",
         "options": [
-          {"cle": "souvent", "libelle": "Souvent"},
-          {"cle": "parfois", "libelle": "De temps en temps"},
-          {"cle": "non", "libelle": "Non"}
+          {
+            "cle": "souvent",
+            "libelle": "Souvent"
+          },
+          {
+            "cle": "parfois",
+            "libelle": "Parfois"
+          },
+          {
+            "cle": "non",
+            "libelle": "Non"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas"
+          }
         ]
       },
       {
         "id": "d2_lettres_miroir",
-        "question": "Devant un mot avec des b, des d, des p ou des q, tu ralentis pour vérifier ?",
+        "question": "Les lettres b, d, p ou q te demandent un effort particulier ?",
         "options": [
-          {"cle": "oui", "libelle": "Oui"},
-          {"cle": "parfois", "libelle": "Parfois"},
-          {"cle": "non", "libelle": "Non"}
+          {
+            "cle": "oui",
+            "libelle": "Oui"
+          },
+          {
+            "cle": "parfois",
+            "libelle": "Parfois"
+          },
+          {
+            "cle": "non",
+            "libelle": "Non"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas"
+          }
         ]
       },
       {
         "id": "d3_segmenter_ou_reecrire",
-        "question": "Laquelle de ces deux versions t'aide le plus ?",
+        "question": "Sur cet extrait, quelle version te convient ?",
+        "options": [
+          {
+            "cle": "segmentee",
+            "libelle": "Même texte, découpé visuellement"
+          },
+          {
+            "cle": "reecrite",
+            "libelle": "Phrase reformulée, même information"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas encore"
+          },
+          {
+            "cle": "original",
+            "libelle": "Garder comme dans ma synthèse"
+          }
+        ],
         "montrer": {
-          "quoi": "une vraie phrase de cinq lignes tirée du cours",
+          "quoi": "un passage réel de la synthèse",
           "variantes": [
-            "coupée en segments courts, avec exactement les mêmes mots",
-            "réécrite plus simplement"
+            "mêmes mots segmentés",
+            "reformulation fidèle"
           ]
         },
-        "options": [
-          {"cle": "segmentee", "libelle": "La première"},
-          {"cle": "reecrite", "libelle": "La deuxième"},
-          {"cle": "pareil", "libelle": "Les deux se valent"}
-        ]
-      },
-      {
-        "id": "d4_mot_complique",
-        "question": "Quand un mot compliqué arrive dans ton cours, tu fais quoi ?",
-        "options": [
-          {"cle": "continue", "libelle": "Je continue et j'espère comprendre plus loin"},
-          {"cle": "bloque", "libelle": "Je m'arrête et je bloque"},
-          {"cle": "devine", "libelle": "Je devine d'après le reste"}
-        ]
+        "note": "Une gêne de vocabulaire ultérieure ne peut pas annuler le refus de reformuler."
       }
     ],
     "attention": [
       {
-        "id": "a1_ecrire_dessus",
-        "question": "Tu écris sur tes cours quand tu révises ? (surligner, annoter, dessiner)",
+        "id": "a3_reprise",
+        "question": "Après une pause, tu retrouves où tu en étais ?",
         "options": [
-          {"cle": "oui", "libelle": "Oui souvent"},
-          {"cle": "un_peu", "libelle": "Un peu"},
-          {"cle": "jamais", "libelle": "Jamais"}
+          {
+            "cle": "tout_de_suite",
+            "libelle": "Oui"
+          },
+          {
+            "cle": "cherche",
+            "libelle": "Je cherche"
+          },
+          {
+            "cle": "recommence",
+            "libelle": "Je recommence"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas encore"
+          },
+          {
+            "cle": "original",
+            "libelle": "Garder comme dans ma synthèse"
+          }
         ]
       },
       {
         "id": "a2_listes",
-        "question": "Laquelle de ces deux listes tu retiendrais mieux ?",
-        "montrer": {
-          "quoi": "neuf éléments",
-          "variantes": ["les neuf d'affilée", "les mêmes en trois groupes de trois"]
-        },
+        "question": "Quel regroupement t’aide sur cet extrait ?",
         "options": [
-          {"cle": "affilee", "libelle": "La première"},
-          {"cle": "groupes", "libelle": "La deuxième"}
-        ]
+          {
+            "cle": "affilee",
+            "libelle": "La liste continue"
+          },
+          {
+            "cle": "groupes",
+            "libelle": "Les mêmes éléments en petits groupes"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas encore"
+          },
+          {
+            "cle": "original",
+            "libelle": "Garder comme dans ma synthèse"
+          }
+        ],
+        "montrer": {
+          "quoi": "une liste déjà présente",
+          "variantes": [
+            "liste continue",
+            "groupes de trois"
+          ]
+        }
       },
       {
-        "id": "a3_reprise",
-        "question": "Quand tu reprends ton cours après une pause, tu retrouves où tu en étais ?",
+        "id": "q_compteur",
+        "question": "Les compteurs de position montrés t’aident ?",
         "options": [
-          {"cle": "tout_de_suite", "libelle": "Tout de suite"},
-          {"cle": "cherche", "libelle": "Je cherche un peu"},
-          {"cle": "recommence", "libelle": "Je recommence la page"}
+          {
+            "cle": "oui",
+            "libelle": "Oui"
+          },
+          {
+            "cle": "non",
+            "libelle": "Non"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas encore"
+          },
+          {
+            "cle": "original",
+            "libelle": "Garder comme dans ma synthèse"
+          }
         ]
       }
     ],
     "chiffres": [
       {
         "id": "c1_groupes",
-        "question": "Lequel des deux tu lis le plus vite ?",
-        "montrer": {"quoi": "un nombre", "variantes": ["1247893", "1 247 893"]},
+        "question": "Quelle présentation de ce nombre préfères-tu ?",
         "options": [
-          {"cle": "colle", "libelle": "Le premier"},
-          {"cle": "espace", "libelle": "Le second"}
+          {
+            "cle": "colle",
+            "libelle": "1247893"
+          },
+          {
+            "cle": "espace",
+            "libelle": "1 247 893"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas encore"
+          },
+          {
+            "cle": "original",
+            "libelle": "Garder comme dans ma synthèse"
+          }
         ]
       },
       {
         "id": "c2_tableau",
-        "question": "Devant un tableau de six colonnes, tu fais quoi ?",
+        "question": "Dans ce tableau, comment suis-tu les informations ?",
         "options": [
-          {"cle": "lis", "libelle": "J'arrive à le lire"},
-          {"cle": "doigt", "libelle": "Je suis les lignes avec le doigt"},
-          {"cle": "abandonne", "libelle": "J'abandonne"}
+          {
+            "cle": "lis",
+            "libelle": "Je le lis facilement"
+          },
+          {
+            "cle": "doigt",
+            "libelle": "Je suis les lignes pour me repérer"
+          },
+          {
+            "cle": "abandonne",
+            "libelle": "Je n’arrive pas à le parcourir"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas encore"
+          },
+          {
+            "cle": "original",
+            "libelle": "Garder comme dans ma synthèse"
+          }
         ]
+      },
+      {
+        "id": "q_tableaux",
+        "question": "Après comparaison des deux versions du tableau, laquelle conserver ?",
+        "options": [
+          {
+            "cle": "conserver",
+            "libelle": "Le tableau entier"
+          },
+          {
+            "cle": "decouper",
+            "libelle": "Les parties séparées avec leurs en-têtes"
+          },
+          {
+            "cle": "signaler",
+            "libelle": "Le tableau entier avec un commentaire"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas encore"
+          },
+          {
+            "cle": "original",
+            "libelle": "Garder comme dans ma synthèse"
+          }
+        ],
+        "note": "Vérifier aussi les comparaisons entre colonnes, pas seulement la lecture d’une cellule."
+      },
+      {
+        "id": "c3_teintes",
+        "question": "La teinte des chiffres montrée t’aide ?",
+        "options": [
+          {
+            "cle": "oui",
+            "libelle": "Oui"
+          },
+          {
+            "cle": "non",
+            "libelle": "Non"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas encore"
+          },
+          {
+            "cle": "original",
+            "libelle": "Garder comme dans ma synthèse"
+          }
+        ],
+        "visuel_seulement": true
       }
     ],
     "reperage": [
       {
         "id": "r1_ou_regarder",
-        "question": "Sur une page bien remplie, tu sais où poser les yeux en premier ?",
+        "question": "Tu retrouves facilement une information dans la synthèse ?",
         "options": [
-          {"cle": "oui", "libelle": "Oui"},
-          {"cle": "pas_vraiment", "libelle": "Pas vraiment"},
-          {"cle": "perdu", "libelle": "Je suis perdu"}
+          {
+            "cle": "oui",
+            "libelle": "Oui"
+          },
+          {
+            "cle": "pas_vraiment",
+            "libelle": "Pas vraiment"
+          },
+          {
+            "cle": "perdu",
+            "libelle": "Je me perds"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas encore"
+          },
+          {
+            "cle": "original",
+            "libelle": "Garder comme dans ma synthèse"
+          }
         ]
+      }
+    ],
+    "vision": [
+      {
+        "id": "q_sans_couleurs",
+        "question": "Préfères-tu éviter tout nouveau repère coloré ?",
+        "options": [
+          {
+            "cle": "oui",
+            "libelle": "Oui"
+          },
+          {
+            "cle": "non",
+            "libelle": "Non"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas encore"
+          },
+          {
+            "cle": "original",
+            "libelle": "Garder comme dans ma synthèse"
+          }
+        ]
+      },
+      {
+        "id": "q3_fond",
+        "question": "Quel fond est le plus confortable sur cet extrait ?",
+        "options": [
+          {
+            "cle": "blanc",
+            "libelle": "Version claire"
+          },
+          {
+            "cle": "creme",
+            "libelle": "Version crème"
+          },
+          {
+            "cle": "sombre",
+            "libelle": "Version sombre"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas encore"
+          },
+          {
+            "cle": "original",
+            "libelle": "Garder comme dans ma synthèse"
+          }
+        ],
+        "montrer": {
+          "quoi": "le même extrait, deux variantes à la fois",
+          "variantes": [
+            "blanc",
+            "crème",
+            "sombre"
+          ]
+        },
+        "visuel_seulement": true
+      },
+      {
+        "id": "q4_police",
+        "question": "Quelle version se lit le mieux ?",
+        "options": [
+          {
+            "cle": "a",
+            "libelle": "Version A"
+          },
+          {
+            "cle": "b",
+            "libelle": "Version B"
+          },
+          {
+            "cle": "c",
+            "libelle": "Version C (si essayée)"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas encore"
+          },
+          {
+            "cle": "original",
+            "libelle": "Garder comme dans ma synthèse"
+          }
+        ],
+        "montrer": {
+          "quoi": "le même extrait, deux variantes à la fois",
+          "variantes": [
+            "Verdana",
+            "Arial",
+            "OpenDyslexic seulement si souhaitée"
+          ]
+        },
+        "visuel_seulement": true
+      },
+      {
+        "id": "q5_couleurs",
+        "question": "As-tu un code couleur à conserver ?",
+        "options": [
+          {
+            "cle": "systeme",
+            "libelle": "Oui, j’ai mon code"
+          },
+          {
+            "cle": "non",
+            "libelle": "Je veux éviter de nouvelles couleurs"
+          },
+          {
+            "cle": "hasard",
+            "libelle": "Je surligne sans code fixe"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas encore"
+          },
+          {
+            "cle": "original",
+            "libelle": "Garder comme dans ma synthèse"
+          }
+        ],
+        "champ_libre_facultatif": true,
+        "note": "Noter le code dans q5_grille et ses usages ; ne pas appliquer automatiquement une classification inventée."
+      }
+    ],
+    "comprehension": [
+      {
+        "id": "comprehension_obstacle",
+        "question": "Qu’est-ce qui gêne la compréhension ?",
+        "options": [
+          {
+            "cle": "phrase",
+            "libelle": "La construction des phrases"
+          },
+          {
+            "cle": "liens",
+            "libelle": "Les liens entre les idées"
+          },
+          {
+            "cle": "vocabulaire",
+            "libelle": "Les mots spécialisés"
+          },
+          {
+            "cle": "autre",
+            "libelle": "Autre chose"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas encore"
+          },
+          {
+            "cle": "original",
+            "libelle": "Garder comme dans ma synthèse"
+          }
+        ],
+        "champ_libre_facultatif": true,
+        "note": "Conserver les termes ; proposer segmentation puis, seulement si autorisée, reformulation fidèle."
+      }
+    ],
+    "memoire": [
+      {
+        "id": "memoire_obstacle",
+        "question": "Quels repères t’aident à reprendre une information ?",
+        "options": [
+          {
+            "cle": "titres",
+            "libelle": "Des titres stables"
+          },
+          {
+            "cle": "groupes",
+            "libelle": "Des petits groupes"
+          },
+          {
+            "cle": "rien",
+            "libelle": "Ajouter des repères me gêne"
+          },
+          {
+            "cle": "autre",
+            "libelle": "Autre chose"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas encore"
+          },
+          {
+            "cle": "original",
+            "libelle": "Garder comme dans ma synthèse"
+          }
+        ],
+        "champ_libre_facultatif": true
+      }
+    ],
+    "fatigue": [
+      {
+        "id": "fatigue_obstacle",
+        "question": "Qu’est-ce qui te coûte le plus sur cet extrait ?",
+        "options": [
+          {
+            "cle": "voir",
+            "libelle": "Voir ou suivre le texte"
+          },
+          {
+            "cle": "comprendre",
+            "libelle": "Comprendre"
+          },
+          {
+            "cle": "naviguer",
+            "libelle": "Retrouver ou manipuler les informations"
+          },
+          {
+            "cle": "duree",
+            "libelle": "Lire longtemps"
+          },
+          {
+            "cle": "autre",
+            "libelle": "Autre chose"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas encore"
+          },
+          {
+            "cle": "original",
+            "libelle": "Garder comme dans ma synthèse"
+          }
+        ],
+        "champ_libre_facultatif": true,
+        "note": "Ne pas déduire une fatigue visuelle ; réduire le nombre de questions, permettre l’arrêt."
+      }
+    ],
+    "navigation": [
+      {
+        "id": "navigation_obstacle",
+        "question": "Qu’est-ce qui manque pour utiliser la synthèse avec ton outil ?",
+        "options": [
+          {
+            "cle": "titres",
+            "libelle": "Des titres pour naviguer"
+          },
+          {
+            "cle": "images",
+            "libelle": "Des descriptions de visuels"
+          },
+          {
+            "cle": "tableaux",
+            "libelle": "Des tableaux compréhensibles"
+          },
+          {
+            "cle": "clavier",
+            "libelle": "Un parcours au clavier"
+          },
+          {
+            "cle": "autre",
+            "libelle": "Autre chose"
+          },
+          {
+            "cle": "inconnu",
+            "libelle": "Je ne sais pas encore"
+          },
+          {
+            "cle": "original",
+            "libelle": "Garder comme dans ma synthèse"
+          }
+        ],
+        "multiple": true,
+        "champ_libre_facultatif": true
+      }
+    ],
+    "autre": [
+      {
+        "id": "besoin_libre",
+        "question": "Tu peux décrire ce qui gêne ou ce qui t’aide, si tu le souhaites.",
+        "options": [
+          {
+            "cle": "dire",
+            "libelle": "Je veux l’expliquer"
+          },
+          {
+            "cle": "essai",
+            "libelle": "Je préfère essayer sur un extrait"
+          },
+          {
+            "cle": "original",
+            "libelle": "Garder l’original pour le moment"
+          }
+        ],
+        "champ_libre_facultatif": true,
+        "note": "Enregistrer l’explication, pas la clé du choix, dans besoin_libre."
       }
     ]
   },
-  "final": [
-    {
-      "id": "z1_mnemo",
-      "question": "Tu utilises des trucs pour retenir ? (phrases, images, acronymes)",
-      "options": [
-        {"cle": "oui", "libelle": "Oui, j'en invente"},
-        {"cle": "aimerais", "libelle": "J'aimerais bien mais je n'y arrive pas"},
-        {"cle": "embrouille", "libelle": "Non, ça m'embrouille plus qu'autre chose"}
-      ],
-      "note": "La troisième réponse compte autant que les deux autres : pour certaines personnes, un moyen mnémotechnique ajoute une couche à mémoriser."
-    }
-  ],
+  "final": [],
   "presentation": {
     "defaut": {
       "par_groupe": 3,
-      "progression": "position",
-      "champ_libre": false
-    },
-    "selon_difficulte": {
-      "ligne": {"phrases": "courtes", "negations": false, "double_question": false, "montrer_plutot_que_decrire": true},
-      "lettres": {"phrases": "courtes", "champ_libre": false},
-      "attention": {"par_groupe": 1, "annoncer_le_reste": true, "pavés": false},
-      "chiffres": {"progression": "points"},
-      "reperage": {"colonnes": 1, "options_espacees": true, "grille": false},
-      "fatigue": {"par_groupe": 3}
+      "progression": "texte",
+      "champ_libre_facultatif": true,
+      "colonnes": 1
     }
   }
 }
