@@ -255,7 +255,7 @@ def tout(dossier=None):
     dossier = Path(dossier or DOSSIER)
     dossier.mkdir(parents=True, exist_ok=True)
     return {
-        "docx": ecrire_docx(dossier / "cours-droit-constitutionnel.docx"),
+        "docx": ecrire_docx(dossier / "synthese-droit-constitutionnel.docx"),
         "pdf_texte": pdf_texte(dossier / "cours-numerique.pdf"),
         "pdf_scanne": pdf_scanne(dossier / "cours-scanne.pdf"),
     }

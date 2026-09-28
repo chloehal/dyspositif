@@ -12,7 +12,7 @@ s'abstient : une fausse liste désoriente plus qu'un paragraphe dense.
 import copy
 import xml.etree.ElementTree as ET
 
-from . import analyse, ooxml, suivi
+from . import analyse, ooxml, suivi, numerotation
 from .ooxml import ORDRE_PPR, q
 
 
@@ -48,8 +48,13 @@ def candidats(document, portee=None):
     return trouves
 
 
-def appliquer(document, reviseur, specifications, profil):
+def appliquer(document, reviseur, specifications, profil, dossier=None):
     """Sort les listes confirmées. `specifications` vient de `candidats`, filtrée."""
+    if dossier is None:
+        raise ValueError("Un dossier DOCX est requis pour créer une liste sémantique.")
+    actuels = candidats(document)
+    if any(spec not in actuels for spec in specifications):
+        raise ValueError("Liste non confirmée ou périmée : relancer listes sur le document actuel.")
     groupe_de = int(profil.get("listes", {}).get("grouper_par", 0) or 0)
     compteur = bool(profil.get("listes", {}).get("compteur"))
     faits = 0
@@ -67,8 +72,6 @@ def appliquer(document, reviseur, specifications, profil):
         texte = ooxml.texte_paragraphe(paragraphe)
         elements = specification["elements"]
         debut, fin = specification["debut"], specification["fin"]
-        if texte[debut:fin] != "".join(texte[debut:fin]):
-            continue
 
         remplacement = " :"
         if fin < len(texte) and texte[fin] in ".;":
@@ -87,6 +90,10 @@ def appliquer(document, reviseur, specifications, profil):
             continue
         position = list(parent).index(paragraphe)
         modele = _modele_de_liste(paragraphe)
+        num_id = numerotation.ajouter(dossier, profil.get("listes", {}).get("numeroter", False), compteur)
+        numpr = ooxml.poser_enfant(modele, "w:numPr", ORDRE_PPR)
+        ET.SubElement(numpr, q("w:ilvl"), {q("w:val"): "0"})
+        ET.SubElement(numpr, q("w:numId"), {q("w:val"): str(num_id)})
 
         inseres = []
         for rang, element in enumerate(elements):
@@ -95,7 +102,7 @@ def appliquer(document, reviseur, specifications, profil):
             if compteur:
                 ligne = "%s sur %s — %s" % (rang + 1, len(elements), element)
             else:
-                ligne = "%s. %s" % (rang + 1, element)
+                ligne = element
             inseres.append(
                 suivi.paragraphe_insere(modele, [(ligne, None)], reviseur)
             )

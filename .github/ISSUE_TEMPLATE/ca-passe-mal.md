@@ -1,6 +1,6 @@
 ---
 name: Ça passe mal
-about: Un cours mal adapté, une question incompréhensible, un plantage
+about: Une synthèse mal adapté, une question incompréhensible, un plantage
 title: ''
 labels: ''
 assignees: ''
@@ -14,8 +14,8 @@ assignees: ''
 
 **Le document**
 
-<!-- Si tu peux : le type (cours, article, énoncé), le nombre de pages, s'il
-     contient des tableaux ou des images. N'envoie pas ton cours ici, c'est
+<!-- Si tu peux : le format de la synthèse (Word, PDF), le nombre de pages, s'il
+     contient des tableaux ou des images. N'envoie pas ta synthèse ici, c'est
      public. -->
 
 **Le message d'erreur, s'il y en a un**

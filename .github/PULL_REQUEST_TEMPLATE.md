@@ -4,7 +4,7 @@
 
 ## Pourquoi
 
-<!-- Le vécu derrière : une gêne à la lecture, un cours qui passait mal, un bug
+<!-- Le vécu derrière : une gêne à la lecture, une synthèse qui passait mal, un bug
      rencontré. C'est ce qui aide le plus à juger la proposition. -->
 
 ## Vérifications
@@ -12,7 +12,7 @@
 - [ ] `python3 tests/test_dys.py` passe
 - [ ] Si ça touche au texte du document : la modification passe par
       `dyslib/suivi.py` (modification suivie Word)
-- [ ] Si ça touche au document : `dys.py verifier` passe sur un cours de test
+- [ ] Si ça touche au document : `dys.py verifier` passe sur une synthèse de test
 - [ ] Un test couvre le nouveau comportement (ou le bug corrigé)
 
 ## Le critère de partage
