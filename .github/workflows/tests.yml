@@ -27,19 +27,19 @@ jobs:
         run: python -m pip install --quiet defusedxml
 
       - name: Tests
-        run: python3 tests/test_dys.py
+        run: python3 tests/run.py
 
       - name: Le document produit se relit et se vérifie
         run: |
           python3 tests/fabriquer_fixture.py
-          python3 scripts/dys.py analyser tests/documents/cours-droit-constitutionnel.docx
+          python3 scripts/dys.py analyser tests/documents/synthese-droit-constitutionnel.docx
           python3 scripts/dys.py appliquer \
-            tests/documents/cours-droit-constitutionnel.docx /tmp/sortie.docx
+            tests/documents/synthese-droit-constitutionnel.docx /tmp/sortie.docx --nature synthese
           # 0 = tout passe, 4 = incomplet (validate.py absent de la CI, la skill
           # docx n'y est pas installée), 3 = échec réel → on échoue.
           set +e
           python3 scripts/dys.py verifier /tmp/sortie.docx \
-            --original tests/documents/cours-droit-constitutionnel.docx
+            --original tests/documents/synthese-droit-constitutionnel.docx
           code=$?
           set -e
           test "$code" -eq 0 -o "$code" -eq 4

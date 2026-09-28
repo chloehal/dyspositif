@@ -18,6 +18,22 @@ correctif.
 
 ## [Non publié]
 
+### Changé
+
+- Périmètre : adaptation de synthèses existantes uniquement ; aucune création de synthèse ni adaptation de cours brut.
+- Profil v2 : besoins sans inférence diagnostique, décisions/refus, propositions à confirmer, contextes et essais temporaires. Migration v1 explicite.
+- Questionnaire : besoins non répertoriés, écriture facultative, rythme réel et ordre invariant ; calibration sur un extrait représentatif.
+- CLI : `appliquer` exige `--nature synthese` ; ajout de `extrait`, `structurer`, `accessibilite`. L’ancien `--pages` reste une limite partielle documentée.
+- Couleurs ajoutées contrastées, codes existants préservés, réglages effectivement appliqués et conflits consignés.
+
+### Fidélité et vérification
+
+- Contrôle de restitution du texte, identité des médias/parties protégées, conservation des relations et objets en complément des nombres.
+- Corrections structurelles confirmées sans modification du texte pédagogique.
+- Limites de la validation automatique explicites ; protocole d’essais utilisateurs réels ajouté.
+- Tests de refus, combinaisons, profils, structure et corruption des fichiers ; scénarios d’évaluation recentrés.
+
+
 ## [0.1.0] — 2026-08-11
 
 Première version utilisable.

@@ -51,7 +51,8 @@ REPONSES = {
     "a3_reprise": "cherche",
     "c1_groupes": "espace",
     "c2_tableau": "abandonne",
-    "z1_mnemo": "oui",
+    "q_compteur": "oui",
+    "q_tableaux": "decouper",
 }
 
 
@@ -105,7 +106,11 @@ class BaseDocument(unittest.TestCase):
         cls.source = cls.documents["docx"]
         chemin_reponses = cls.dossier / "reponses.json"
         chemin_reponses.write_text(json.dumps(REPONSES), encoding="utf-8")
+        lancer("profil", "--oublier")
         resultat = lancer("profil", "--reponses", str(chemin_reponses))
+        assert resultat.returncode == 0, resultat.stderr
+        lancer("profil", "--definir", "alignement=gauche")
+        resultat = lancer("profil", "--valider", "interligne", "longueur_ligne", "lettres_miroir.actif", "filet_section")
         assert resultat.returncode == 0, resultat.stderr
 
 
@@ -161,11 +166,12 @@ class TestProfil(BaseDocument):
         self.assertNotIn("\n", resume)
         self.assertIn("interligne", resume)
 
-    def test_papier_annule_le_fond_sombre(self):
+    def test_papier_signale_sans_ecraser_le_choix(self):
         profil = module_profil.depuis_reponses(
             {"q1_gene": ["ligne"], "q2_support": "papier", "q3_fond": "sombre"}
         )
-        self.assertNotEqual(profil["fond"], "sombre")
+        self.assertEqual(profil["fond"], "sombre")
+        self.assertTrue(module_profil.pour_application(profil)["conflits"])
 
     def test_branches_seulement_si_declarees(self):
         self.assertEqual(module_profil.branches_a_poser(["chiffres"]), ["chiffres"])
@@ -190,12 +196,10 @@ class TestQuestionnaire(BaseDocument):
         self.assertEqual(resultat.returncode, 0, resultat.stderr)
         return json.loads(resultat.stdout)
 
-    def test_dyscalculie_progression_figuree(self):
+    def test_diagnostic_ne_prescrit_pas_la_presentation(self):
         sortie = self._questions(troubles="dyscalculie")
-        self.assertEqual(sortie["presentation"]["progression"], "points")
-        self.assertIn("progression", sortie)
-        self.assertIn("●", sortie["progression"][0])
-        self.assertEqual(sortie["branches_ouvertes"], ["chiffres"])
+        self.assertEqual(sortie["presentation"]["progression"], "texte")
+        self.assertEqual(sortie["branches_ouvertes"], [])
 
     def test_dechiffrage_sans_branche_chiffres(self):
         sortie = self._questions(difficultes="ligne")
@@ -208,7 +212,7 @@ class TestQuestionnaire(BaseDocument):
         self.assertTrue(all(len(groupe) <= 3 for groupe in sortie["groupes"]))
         self.assertIn("t'arrêter quand tu veux", sortie["annonce"])
 
-    def test_aucune_question_a_champ_libre(self):
+    def test_questions_proposent_des_choix_sans_exiger_ecriture(self):
         chemin = RACINE / "references" / "questionnaire.json"
         questionnaire = json.loads(chemin.read_text(encoding="utf-8"))
         toutes = list(questionnaire["socle"]) + list(questionnaire["final"])
@@ -224,7 +228,7 @@ class TestQuestionnaire(BaseDocument):
         chemin = RACINE / "references" / "questionnaire.json"
         questionnaire = json.loads(chemin.read_text(encoding="utf-8"))
         for identifiant in ("q3_fond", "q4_police"):
-            question = [q for q in questionnaire["socle"] if q["id"] == identifiant][0]
+            question = [q for q in questionnaire["branches"]["vision"] if q["id"] == identifiant][0]
             self.assertIn("montrer", question)
             self.assertIn("variantes", question["montrer"])
 
@@ -239,6 +243,7 @@ class TestApplication(BaseDocument):
         cls.listes.write_text(candidats.stdout, encoding="utf-8")
         cls.resultat = lancer(
             "appliquer",
+            "--nature", "synthese",
             str(cls.source),
             str(cls.sortie),
             "--etapes",
@@ -319,7 +324,7 @@ class TestValidationMachine(BaseDocument):
     def setUpClass(cls):
         super(TestValidationMachine, cls).setUpClass()
         cls.sortie = cls.dossier / "validee.docx"
-        cls.resultat = lancer("appliquer", str(cls.source), str(cls.sortie))
+        cls.resultat = lancer("appliquer", str(cls.source), str(cls.sortie), "--nature", "synthese")
 
     def test_validate_py_passe(self):
         if paquet.python_docx() is None:

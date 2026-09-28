@@ -3,10 +3,10 @@
 
     python scripts/dys.py profil
     python scripts/dys.py questions --difficultes ligne,chiffres
-    python scripts/dys.py analyser cours.docx
-    python scripts/dys.py appliquer cours.docx sortie.docx --pages 1
+    python scripts/dys.py analyser synthese.docx
+    python scripts/dys.py appliquer synthese.docx sortie.docx --nature synthese
     python scripts/dys.py apercu sortie.docx
-    python scripts/dys.py verifier sortie.docx --original cours.docx
+    python scripts/dys.py verifier sortie.docx --original synthese.docx
 
 Chaque commande fait une chose et s'arrête : le parcours en six étapes de
 SKILL.md décide de l'enchaînement, pas ce fichier.
@@ -44,31 +44,25 @@ CARACTERES_PAR_PAGE = 1800
 
 def commande_profil(args):
     if args.oublier:
-        print("Profil supprimé." if module_profil.oublier() else "Aucun profil à supprimer.")
+        if args.temporaire:
+            raise ValueError("--oublier et --temporaire sont incompatibles.")
+        print("Profil supprimé." if module_profil.oublier(args.contexte) else "Aucun profil à supprimer.")
         return 0
-
-    profil = module_profil.charger()
-
+    profil = module_profil.charger(args.contexte)
     if args.reponses:
         with open(args.reponses, encoding="utf-8") as f:
-            reponses = json.load(f)
-        profil = module_profil.depuis_reponses(reponses, base=profil)
+            profil = module_profil.depuis_reponses(json.load(f), base=profil)
     if args.definir:
-        profil = module_profil.appliquer_definitions(profil or dict(module_profil.DEFAUTS), args.definir)
-
-    if args.reponses or args.definir:
-        chemin = module_profil.enregistrer(profil)
-        print("Profil enregistré : %s" % chemin)
-
+        profil = module_profil.appliquer_definitions(profil or {}, args.definir, essai=args.temporaire)
+    if args.valider:
+        profil = module_profil.valider_propositions(profil or {}, args.valider)
     if profil is None:
-        print("Aucun profil enregistré. (%s)" % module_profil.emplacement())
+        print("Aucun profil enregistré.", file=sys.stderr if args.json else sys.stdout)
         return 1 if args.json else 0
-
-    if args.json:
-        print(json.dumps(profil, ensure_ascii=False, indent=2, sort_keys=True))
-    else:
-        print(module_profil.resume(profil))
-        print("Fichier : %s" % module_profil.emplacement())
+    if (args.reponses or args.definir or args.valider) and not args.temporaire:
+        chemin = module_profil.enregistrer(profil, args.contexte)
+        print("Profil enregistré : %s" % chemin, file=sys.stderr if args.json else sys.stdout)
+    print(json.dumps(profil, ensure_ascii=False, indent=2, sort_keys=True) if args.json else module_profil.resume(profil))
     return 0
 
 
@@ -76,42 +70,10 @@ def commande_profil(args):
 
 
 def commande_questions(args):
-    chemin = SKILL / "references" / "questionnaire.json"
-    with open(chemin, encoding="utf-8") as f:
+    from dyslib.questionnaire import preparer
+    with open(SKILL / "references" / "questionnaire.json", encoding="utf-8") as f:
         questionnaire = json.load(f)
-
-    difficultes = [d for d in (args.difficultes or "").split(",") if d]
-    for trouble in [t for t in (args.troubles or "").split(",") if t]:
-        for difficulte in module_profil.TROUBLE_VERS_DIFFICULTES.get(trouble, []):
-            if difficulte not in difficultes:
-                difficultes.append(difficulte)
-
-    questions = list(questionnaire["socle"]) if not difficultes else []
-    if difficultes:
-        for branche in module_profil.branches_a_poser(difficultes):
-            questions += questionnaire["branches"].get(branche, [])
-        questions += questionnaire["final"]
-    else:
-        questions += questionnaire["final"]
-
-    presentation = dict(questionnaire["presentation"]["defaut"])
-    for difficulte in difficultes:
-        presentation.update(
-            questionnaire["presentation"]["selon_difficulte"].get(difficulte, {})
-        )
-
-    groupes = [questions[i: i + 3] for i in range(0, len(questions), 3)]
-    sortie = {
-        "total": len(questions),
-        "annonce": questionnaire["annonce"],
-        "presentation": presentation,
-        "groupes": groupes,
-        "branches_ouvertes": module_profil.branches_a_poser(difficultes),
-    }
-    if presentation.get("progression") == "points":
-        sortie["progression"] = [
-            "●" * (i + 1) + "○" * (len(groupes) - i - 1) for i in range(len(groupes))
-        ]
+    sortie = preparer(questionnaire, (args.difficultes or "").split(","), args.acces, args.rythme)
     print(json.dumps(sortie, ensure_ascii=False, indent=2))
     return 0
 
@@ -169,22 +131,32 @@ def _portee_en_blocs(source, pages):
 def commande_appliquer(args):
     source = Path(args.source)
     sortie = Path(args.sortie)
+    if args.nature != "synthese":
+        raise ValueError("Cette version adapte uniquement une synthèse existante, pas un cours ni un résumé à créer.")
+    if source.resolve() == sortie.resolve():
+        raise ValueError("La sortie doit avoir un autre nom : conserver la source.")
+    if source.suffix.lower() != ".docx":
+        raise ValueError("Une synthèse PDF doit être convertie et sa fidélité contrôlée avant adaptation.")
 
-    profil = module_profil.charger()
+    profil = module_profil.charger(args.contexte)
     if args.profil:
         with open(args.profil, encoding="utf-8") as f:
             charge = json.load(f)
-        profil = module_profil.depuis_reponses(charge) if "q1_gene" in charge else charge
+        profil = module_profil.depuis_reponses(charge) if any(k.startswith("q") for k in charge) else module_profil.normaliser(charge)
     if profil is None:
         print(
-            "Aucun profil enregistré : les réglages courants sont utilisés. "
+            "Aucun profil enregistré : la présentation d’origine est conservée. "
             "(`dys.py profil --reponses ...` pour en enregistrer un)",
             file=sys.stderr,
         )
         profil = dict(module_profil.DEFAUTS)
         profil.update(module_profil.COURANTS)
 
+    profil = module_profil.pour_application(profil)
     etapes = [e.strip() for e in args.etapes.split(",") if e.strip()]
+    inconnues = set(etapes) - {"forme", "segmentation", "chiffres", "tableaux", "listes"}
+    if inconnues:
+        raise ValueError("Étapes inconnues : " + ", ".join(sorted(inconnues)))
     rapport = analyse.analyser_docx(source)
     portee = _portee_en_blocs(source, args.pages)
 
@@ -193,7 +165,7 @@ def commande_appliquer(args):
         with open(args.listes_spec, encoding="utf-8") as f:
             specifications = json.load(f)
 
-    faits = {}
+    faits = {"conflits": profil["conflits"]}
     with paquet.DossierTemporaire() as dossier:
         paquet.ouvrir(source, dossier)
         try:
@@ -211,7 +183,7 @@ def commande_appliquer(args):
         if "chiffres" in etapes and profil.get("chiffres", {}).get("grouper"):
             faits["chiffres"] = module_texte.grouper_chiffres(document, reviseur, portee)
         if "listes" in etapes and specifications:
-            faits["listes"] = listes.appliquer(document, reviseur, specifications, profil)
+            faits["listes"] = listes.appliquer(document, reviseur, specifications, profil, dossier=dossier)
         if "tableaux" in etapes:
             faits["tableaux"] = tableaux.traiter(document, dossier, reviseur, profil)
         if "forme" in etapes:
@@ -225,6 +197,8 @@ def commande_appliquer(args):
         validation = paquet.valider(sortie, original=source, auteur=args.auteur)
 
     chemin_controle = Path(args.controle) if args.controle else sortie.with_suffix(".controle.md")
+    from dyslib import accessibilite
+    faits["accessibilite"] = accessibilite.analyser(sortie)
     controle.ecrire(chemin_controle, source, sortie, profil, faits, reviseur, validation)
 
     resume = {
@@ -305,6 +279,12 @@ def commande_verifier(args):
         passe = False
         resultats["tableaux"]["alerte"] = "des tableaux ont disparu"
 
+    from dyslib import integrite, accessibilite
+    resultats["integrite"] = integrite.comparer(args.original, args.sortie)
+    if not resultats["integrite"]["passe"]:
+        passe = False
+    resultats["accessibilite"] = accessibilite.analyser(args.sortie)
+    resultats["portee"] = "Contrôles techniques ; la fidélité du sens et l’accessibilité d’usage restent à valider."
     valeurs = _controle_des_nombres(args.original, args.sortie)
     resultats["valeurs_numeriques"] = valeurs
     if not valeurs["identiques"]:
@@ -327,12 +307,12 @@ def commande_verifier(args):
 
 
 def _controle_des_nombres(original, sortie):
-    """Aucune valeur numérique du cours ne doit avoir bougé.
+    """Aucune valeur numérique de la synthèse ne doit avoir bougé.
 
     Règle appliquée : toutes les valeurs de l'original se retrouvent dans le
     document accepté. L'outil a le droit d'ajouter des nombres à lui — numéros
     de liste, numéros de partie — mais jamais de modifier, d'arrondir ni de
-    faire disparaître un nombre du cours.
+    faire disparaître un nombre de la synthèse.
     """
     import re
     import zipfile
@@ -372,6 +352,32 @@ def _controle_des_nombres(original, sortie):
     }
 
 
+def commande_extrait(args):
+    from dyslib import extrait
+    if args.inventaire:
+        resultat = extrait.inventaire(args.source)
+    else:
+        if args.sortie is None or args.debut is None or args.fin is None:
+            raise ValueError("Indiquer sortie, --debut et --fin (indices zéro, fin incluse).")
+        resultat = extrait.extraire(args.source, args.sortie, args.debut, args.fin)
+    print(json.dumps(resultat, ensure_ascii=False, indent=2))
+    return 0
+
+
+def commande_structurer(args):
+    from dyslib import structure
+    with open(args.spec, encoding="utf-8") as f:
+        resultat = structure.appliquer(args.source, args.sortie, json.load(f))
+    print(json.dumps(resultat, ensure_ascii=False, indent=2))
+    return 0
+
+
+def commande_accessibilite(args):
+    from dyslib import accessibilite
+    print(json.dumps(accessibilite.analyser(args.fichier), ensure_ascii=False, indent=2))
+    return 4  # Un audit automatisé n'est pas une validation d'usage.
+
+
 # -- CLI -------------------------------------------------------------------
 
 
@@ -383,12 +389,17 @@ def principal(argv=None):
     p.add_argument("--reponses", help="fichier JSON de réponses au questionnaire")
     p.add_argument("--definir", nargs="*", help="police=Arial taille_pt=16 chiffres.grouper=true")
     p.add_argument("--json", action="store_true")
+    p.add_argument("--contexte", help="profil nommé : ecran, papier…")
+    p.add_argument("--temporaire", action="store_true", help="afficher sans enregistrer")
+    p.add_argument("--valider", nargs="+", help="paramètres de propositions validées sur extrait")
     p.add_argument("--oublier", action="store_true")
     p.set_defaults(fonction=commande_profil)
 
     p = sous.add_parser("questions", help="les questions à poser, et elles seules")
     p.add_argument("--difficultes", help="ligne,lettres,attention,chiffres,reperage,fatigue")
     p.add_argument("--troubles", help="dyslexie,tdah,dyscalculie,dyspraxie,dysorthographie")
+    p.add_argument("--acces", choices=["visuel", "lecteur_ecran", "vocal", "clavier"], default="visuel")
+    p.add_argument("--rythme", type=int, choices=[1, 2, 3])
     p.set_defaults(fonction=commande_questions)
 
     p = sous.add_parser("analyser", help="volume, densité, tableaux, listes enfouies")
@@ -404,9 +415,11 @@ def principal(argv=None):
     p = sous.add_parser("appliquer", help="adapter le document")
     p.add_argument("source")
     p.add_argument("sortie")
+    p.add_argument("--nature", required=True, choices=["synthese", "cours", "inconnu"], help="nature confirmée avec la personne")
+    p.add_argument("--contexte")
     p.add_argument("--profil", help="fichier de profil ou de réponses (sinon : profil enregistré)")
     p.add_argument("--etapes", default="forme,segmentation,chiffres,tableaux")
-    p.add_argument("--pages", type=int, help="limite les étapes coûteuses aux N premières pages")
+    p.add_argument("--pages", type=int, help="ancien mode : estime les premiers blocs pour segmentation/chiffres seulement ; préférer extrait")
     p.add_argument("--listes-spec", help="candidats confirmés, au format de `dys.py listes`")
     p.add_argument("--controle", help="chemin du fichier de contrôle")
     p.add_argument("--auteur", default=AUTEUR)
@@ -433,6 +446,24 @@ def principal(argv=None):
     p.add_argument("--auteur", default=AUTEUR)
     p.set_defaults(fonction=commande_verifier)
 
+    p = sous.add_parser("extrait", help="inventorier ou copier des blocs représentatifs")
+    p.add_argument("source")
+    p.add_argument("sortie", nargs="?")
+    p.add_argument("--inventaire", action="store_true")
+    p.add_argument("--debut", type=int)
+    p.add_argument("--fin", type=int)
+    p.set_defaults(fonction=commande_extrait)
+
+    p = sous.add_parser("accessibilite", help="audit structurel partiel, toujours à vérifier en usage")
+    p.add_argument("fichier")
+    p.set_defaults(fonction=commande_accessibilite)
+
+    p = sous.add_parser("structurer", help="appliquer langue, titres, alternatives et en-têtes confirmés")
+    p.add_argument("source")
+    p.add_argument("sortie")
+    p.add_argument("--spec", required=True)
+    p.set_defaults(fonction=commande_structurer)
+
     arguments = parseur.parse_args(argv)
     if not getattr(arguments, "fonction", None):
         parseur.print_help()
@@ -446,7 +477,7 @@ def principal(argv=None):
         )
     try:
         return arguments.fonction(arguments)
-    except paquet.ErreurPaquet as erreur:
+    except (paquet.ErreurPaquet, ValueError, OSError) as erreur:
         print("Erreur : %s" % erreur, file=sys.stderr)
         return 2
 

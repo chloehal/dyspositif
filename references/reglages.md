@@ -1,141 +1,117 @@
-# Chaque paramètre et sa justification
+# Réglages et capacités vérifiables
 
-À charger à l'étape 2, quand il faut traduire les réponses en réglages, ou à
-l'étape 4 en cas de doute sur un mécanisme. Tout ce qui est décrit ici est
-appliqué par `scripts/dyslib/forme.py` — sauf mention contraire, aucun de ces
-réglages ne touche à un mot du cours.
+Les choix sont individuels. Les propositions de taille, police, espacement ou
+fond ne sont ni un traitement ni une règle universelle. Comparer sur la synthèse
+réelle. Ne pas attribuer de bénéfice clinique à une police ou à une couleur.
 
-## Ce qui est établi, et ce qui ne l'est pas
+## Commandes
 
-| Ce qui aide, mesuré | Ce qui se dit sans preuve solide |
+| Commande | Capacité et limite |
 |---|---|
-| Raccourcir la ligne (55–65 caractères) | OpenDyslexic améliorerait la lecture |
-| Augmenter l'espacement entre lettres et entre mots | Une couleur de fond précise « soignerait » la dyslexie |
-| Augmenter l'interligne | Le bleu serait « la » bonne couleur |
-| Éviter le texte justifié | Une police unique conviendrait à tout le monde |
-| Écarter le blanc pur | |
+| profil | Profils v2 locaux, contexte nommé, mises à jour partielles, propositions et décisions |
+| questions | Catalogue filtré par besoins, ordre invariant, rythme 1–3, accès non visuel |
+| analyser | Densité heuristique, paragraphes/index, tableaux et images ; aucune inférence médicale |
+| extrait | Inventaire puis copie de blocs entiers, tableaux compris, pour calibration |
+| appliquer | Mise en forme, segmentation optionnelle, entiers groupés optionnels, tableaux selon choix |
+| listes | Candidats à confirmer ; les nouvelles listes utilisent une numérotation Word sémantique |
+| structurer | Langue par défaut, niveaux de plan de titres existants, alternatives de visuels, en-têtes confirmés |
+| accessibilite | Audit partiel de structure et contrastes, avec limites explicites |
+| apercu | Rendu via LibreOffice/pdftoppm ; ne teste pas le lecteur d'écran |
+| verifier | Contrôle technique externe et interne ; ne certifie ni le sens ni l'accessibilité d'usage |
 
-**Sur OpenDyslexic.** On la propose parce que des personnes la préfèrent, et
-c'est une raison suffisante. Les études disponibles ne montrent pas de gain
-mesurable par rapport à Arial ou Verdana. Ne jamais la présenter comme un
-traitement, ne jamais l'imposer, ne jamais la refuser non plus.
+Les propriétés sans décision sont conservées telles quelles ; les paramètres non
+choisis ne provoquent pas une remise en forme globale. Repartir de l’original
+pour retirer une adaptation précédente.
 
-## Police et corps
+## Réglages du moteur
 
-| Paramètre | Valeurs | Où c'est écrit |
-|---|---|---|
-| `police` | Verdana (défaut), Arial, Tahoma, Century Gothic, OpenDyslexic | `styles.xml` : `docDefaults/rPrDefault/rPr/w:rFonts` + chaque style + tout `rPr` direct |
-| `taille_pt` | 12–16, défaut 13 ; 14 minimum si fatigue déclarée | `w:sz` et `w:szCs`, en demi-points |
+`profil --definir parametre=valeur` représente un choix explicite. Pour un essai,
+utiliser `--temporaire --json > essai.json`, puis `appliquer --profil essai.json`
+(avec `--nature synthese`). Le bilan les étiquette `essai`. Après confirmation,
+répéter les valeurs retenues sans `--temporaire`.
 
-Les tailles des styles existants ne sont pas écrasées mais **mises à l'échelle**
-par le rapport entre la nouvelle taille de base et l'ancienne : un titre reste
-plus gros que le corps. La hiérarchie du document est une information, on ne
-l'aplatit pas.
+| Paramètre | Utilisation |
+|---|---|
+| police, taille_pt | Police disponible sur l'appareil cible, taille 8–72 pt (bornes techniques, pas recommandations) |
+| alignement | conserver ou gauche, sans changement implicite |
+| interligne | 1–3 ; tester confort, regroupement et volume |
+| espacement_lettres_pt | 0–4 pt ; ne pas présumer qu'augmenter aide |
+| longueur_ligne | 20–120 caractères estimés par les marges, pas une mesure typographique exacte |
+| fond | blanc, creme, sombre ; préserver le choix même sur papier, signaler le compromis |
+| couleur_texte | auto selon fond, ou six chiffres hexadécimaux ; audit du contraste |
+| sans_couleurs | Désactive les nouveaux repères colorés, conserve le code existant |
+| texte_intact | Empêche la reformulation ; segmentation et groupement préservent les mots/valeurs |
+| lettres_miroir.actif, chiffres.paires | Uniquement après essai utile ; éviter les runs déjà colorés/surlignés/stylés |
+| chiffres.grouper | Regroupement des entiers ; vérifier identifiants et notations particulières |
+| listes.grouper_par, listes.compteur | Groupement et compteur optionnels ; rien n'est activé par diagnostic |
+| tableaux.action | conserver (défaut), signaler, decouper ; cellules fusionnées non découpées automatiquement |
+| tableaux.max_colonnes | Seuil technique, pas nombre de colonnes universellement accessible |
+| filet_section, marge_annotation | Repères ou marge uniquement si utiles et retenus |
+| segmentation.actif | Coupures visuelles suivies ; désactivées par défaut |
+| air_proportionnel | Espacement variable heuristique, désactivé par défaut ; peut gêner des repères stables |
 
-**Police non installée.** Word substitue en silence et tout le bénéfice
-disparaît chez l'utilisateur. Cette skill n'incorpore pas les polices dans le
-fichier : elle préfère des polices présentes partout (Verdana, Arial, Tahoma).
-Si quelqu'un choisit OpenDyslexic, le lui dire en une phrase :
+Les polices non installées peuvent être substituées : vérifier dans le logiciel
+cible. Le moteur ne gère pas un espacement des mots indépendant, la création
+automatique de chronologies, ni la classification automatique « définition /
+exemple » pour appliquer des couleurs. Le code couleur est conservé et réservé ;
+une nouvelle affectation sémantique demande de vérifier les passages concernés.
 
-> OpenDyslexic n'est pas installée par défaut. Si tu ne l'installes pas, Word
-> remplacera la police sans prévenir. Je peux la mettre quand même, ou partir
-> sur Verdana qui est déjà là.
+Les teintes ajoutées sont choisies avec un contraste d'au moins 4,5:1 sur le
+fond de page et sans réutiliser une couleur personnelle. Les couleurs existantes
+ne sont pas corrigées silencieusement. L'audit signale les associations suspectes ;
+les fonds locaux, thèmes, images, contrastes réels et usages de la couleur sont
+à vérifier dans le rendu. Le [repère WCAG sur le contraste](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum)
+est utilisé pour guider ce contrôle, pas pour certifier un DOCX.
 
-## Espacement
+## Structure confirmée
 
-| Paramètre | Valeurs | Où c'est écrit |
-|---|---|---|
-| `espacement_lettres_pt` | 0.4 à 0.8 pt, 0.6 si confusion de lettres | `w:spacing` dans `rPr` (vingtièmes de point) |
-| `interligne` | 1.4 à 2.0, défaut 1.5 ; 1.8 si perte de ligne fréquente | `w:spacing w:line` (240 = simple), `lineRule="auto"` |
-| `longueur_ligne` | 55 à 70 caractères, 58 si perte de ligne fréquente | marges de section, calculées depuis le corps |
+`analyser --json` donne les indices de paragraphes. `accessibilite` indique les
+identifiants des visuels concernés et indices de tableaux. Exemple de
+`structure.json` (les indices doivent être remplacés par ceux vérifiés) :
 
-Le calcul de la longueur de ligne : largeur de texte ≈ `longueur_ligne × 0.52 ×
-taille_pt × 20` twips, le reste part en marges. Une ligne courte est le réglage
-le mieux établi contre la perte de ligne, et le seul qui coûte de la place.
+```json
+{
+  "langue": "fr-BE",
+  "titres": {"0": 1, "4": 2},
+  "alternatives": {"1": "Description fidèle du visuel effectivement observé."},
+  "entetes_tableaux": {"0": 1}
+}
+```
 
-**Air proportionnel à la densité.** L'espacement avant et après chaque
-paragraphe suit son indice de lisibilité, bloc par bloc : les passages
-difficiles respirent, les faciles restent compacts. Sans cela, un document
-adapté double de longueur sans rien gagner, et il devient impossible à
-imprimer.
+`titres` : index de paragraphe → niveau de plan 1–6, sans changer ses mots.
+`alternatives` : identifiant `wp:docPr` unique du corps → description confirmée.
+`entetes_tableaux` : index de tableau → nombre de premières lignes d'en-tête.
+`langue` : langue par défaut ; ne remplace pas les langues explicites des passages.
+Les alternatives dans en-têtes/notes ou objets VML, les tableaux complexes,
+les listes imbriquées et l'ordre des objets flottants nécessitent une correction
+avec les outils DOCX ou le logiciel cible. Ne pas inventer l'information manquante.
 
-**Jamais de texte justifié.** `w:jc w:val="both"` est ramené à `left`, dans les
-styles comme dans le formatage direct. Le justifié fabrique des rivières
-blanches verticales qui attirent l'œil hors de la ligne.
+Les bonnes pratiques de [Microsoft pour Word](https://support.microsoft.com/en-us/accessibility/word/make-your-word-documents-accessible-to-people-with-disabilities)
+comprennent structure, alternatives et vérification avec les moyens de lecture.
+Un niveau de plan ou une description présente ne prouve pas sa pertinence.
 
-## Fond et couleurs
+## Fidélité et contrôles
 
-| `fond` | Page | Texte | Pour qui |
-|---|---|---|---|
-| `blanc` | `FFFFFF` | `1A1A1A` | Impression, ou préférence explicite |
-| `creme` | `FBF6EC` | `24211C` | Défaut : le blanc pur fatigue |
-| `sombre` | `22262B` | `E7E3DC` | Écran, sensibilité à la luminosité |
+Le validateur extérieur vérifie le schéma et les révisions quand la skill DOCX,
+lxml et defusedxml sont disponibles. `verifier` complète par restitution du texte
+original, identité des médias et parties protégées, conservation des relations,
+liens, champs, références et contenu mathématique. Le contrôle numérique est un
+filet supplémentaire, pas une preuve de conservation des unités ou relations.
 
-Écrit dans `w:background` + `w:displayBackgroundShape` dans `settings.xml` —
-sans ce second réglage, Word ignore purement et simplement la couleur de fond.
-Un profil « papier » force le blanc : un fond sombre à l'impression est
-illisible et vide une cartouche.
+Les sorties distinguent : contrôles passés, échec, contrôle non exécuté. Le bilan
+rapporte les conflits, choix, propositions laissées en attente et alertes.
+L'audit d'accessibilité retourne toujours 4 : il reste une validation humaine.
 
-**Les couleurs de l'utilisateur d'abord.** Si la personne a déjà un système
-(bleu = définitions, vert = à retenir), il est repris tel quel et **aucune
-couleur de l'outil ne vient s'y superposer** : `couleur_libre()` choisit une
-teinte non prise pour les lettres miroir ou les chiffres. C'est le point où la
-skill encode le système de l'utilisateur au lieu d'imposer le sien.
+## Dépendances
 
-## Mécanismes de repérage
+Python 3.9+. `defusedxml` recommandé pour les documents tiers. La skill DOCX
+fournit fusion des runs, commentaires, validation XSD et rendu :
 
-**Lettres miroir teintées.** b, d, p, q reçoivent une nuance légère (défaut
-`C2410C`), pas une police différente : le mot garde sa silhouette, seul le
-caractère qui trompe attire l'œil. Techniquement, le run est découpé en
-plusieurs runs et seuls les caractères visés reçoivent un `w:color` — aucun
-texte n'est modifié, donc aucune modification suivie n'est nécessaire.
+```bash
+export DYSPOSITIF_SKILL_DOCX=/chemin/vers/skills/docx
+export DYSPOSITIF_PYTHON=/chemin/vers/python-avec-lxml-et-defusedxml
+```
 
-**Chiffres.** Deux mécanismes distincts :
-
-- *Distinction visuelle* des paires confondues (3/8, 1/7) : même mécanisme de
-  teinte, aucune modification de texte.
-- *Regroupement par trois* (`1247893` → `1 247 893`) : c'est du texte, donc
-  **modification suivie obligatoire**, avec une espace fine insécable (U+202F)
-  qui ne casse pas le nombre en fin de ligne. La valeur ne change jamais ;
-  `dys.py verifier` le contrôle nombre par nombre.
-
-**Filet de section en marge.** Un trait vertical coloré sur les titres de
-niveau 1 et 2, couleur changeant à chaque grande partie : savoir où l'on est
-sans relire le titre. `w:pBdr/w:left`.
-
-**Colonne d'annotation.** Si la personne écrit sur ses cours, la marge de
-droite est élargie et les marges deviennent asymétriques. Une marge où l'on
-peut écrire vaut mieux qu'une page pleine.
-
-**Un seul fil de lecture.** Jamais deux éléments à suivre en parallèle. Les
-tableaux de plus de trois colonnes sont soit signalés en commentaire, soit
-découpés en tableaux de trois colonnes avec la première colonne répétée
-(`tableaux.action`). Le découpage n'est tenté que sur les tableaux réguliers :
-avec des cellules fusionnées, on signale, on ne déforme pas.
-
-## Structure
-
-**Listes enfouies.** Sorties uniquement quand la phrase annonce l'énumération
-(« les conditions sont… », « on distingue… », deux points). Deux virgules et un
-« et » ne suffisent pas : une fausse liste désoriente plus qu'un paragraphe
-dense. Chaque élément est numéroté et le total est visible (« 3 sur 7 »), parce
-que savoir combien il y en a, c'est pouvoir vérifier qu'on n'en oublie aucun.
-
-**Groupement par trois.** Neuf éléments d'affilée saturent la mémoire de
-travail. Trois groupes de trois, sans toucher aux éléments ni à leur ordre.
-
-## Pièges
-
-- **Ne jamais reformater le XML.** Word interprète les espaces entre balises
-  comme du contenu. Pas d'indentation, pas de jolie mise en page du fichier.
-- **Les déclarations de namespaces de la racine se conservent.** Un
-  `mc:Ignorable="w14 wpc"` qui cite un préfixe non déclaré casse le document ;
-  `ooxml.Document` réinjecte la balise racine d'origine à l'enregistrement.
-- **L'ordre des enfants est imposé par le schéma.** `w:jc` après `w:spacing`
-  dans un `pPr`, `w:ins` en premier dans un `rPr`, `displayBackgroundShape` à
-  sa place exacte dans `settings.xml`. `poser_enfant()` s'en charge — s'en
-  passer produit un fichier que Word refuse d'ouvrir.
-- **Le formatage direct l'emporte sur les styles.** Un cours récupéré en est
-  truffé : sans neutralisation, la moitié du document ignore le profil.
-- **Le XML valide ne garantit pas un rendu lisible.** Regarder l'aperçu
-  (`dys.py apercu`) avant de le montrer.
+LibreOffice et pdftoppm sont nécessaires au rendu. Ne pas présenter un rendu
+non exécuté comme vérifié. Ne pas exposer ces détails à la personne sauf si la
+limite empêche son résultat et qu'une action de sa part peut la résoudre.
