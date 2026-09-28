@@ -1,10 +1,10 @@
 name: landing
 on:
   pull_request:
-    paths: ['site/**', 'package*.json', 'SKILL.md', 'scripts/**', 'references/**', 'README.md', 'LICENSE', '.github/workflows/site.yml']
+    paths: ['site/**', 'package*.json', 'vite.config.js', 'SKILL.md', 'scripts/**', 'references/**', 'README.md', 'LICENSE', '.github/workflows/site.yml']
   push:
     branches: [main]
-    paths: ['site/**', 'package*.json', 'SKILL.md', 'scripts/**', 'references/**', 'README.md', 'LICENSE', '.github/workflows/site.yml']
+    paths: ['site/**', 'package*.json', 'vite.config.js', 'SKILL.md', 'scripts/**', 'references/**', 'README.md', 'LICENSE', '.github/workflows/site.yml']
 permissions:
   contents: read
 jobs:

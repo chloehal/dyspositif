@@ -1,14 +1,15 @@
 # La landing dyspositif
 
-Site statique, sans dépendance ni appel à une IA. Les choix du formulaire restent en mémoire dans la page : aucun envoi, stockage local, outil d’analyse ou dépôt de document n’est ajouté par le site. La copie vers une IA se fait ensuite à l’initiative de la personne.
+Site statique, construit avec Vite, sans appel à une IA. Les choix du formulaire restent en mémoire dans la page : aucun envoi, stockage local, outil d’analyse ou dépôt de document n’est ajouté par le site. La copie vers une IA se fait ensuite à l’initiative de la personne.
 
 ## Aperçu
 
 ```sh
-python3 -m http.server 4173 --directory site/dist
+npm ci
+npm run dev
 ```
 
-Ouvrir `http://127.0.0.1:4173`. Servir par HTTP plutôt que d’ouvrir le fichier HTML directement, car les modules JavaScript nécessitent un serveur.
+Ouvrir `http://127.0.0.1:5173`. Servir par HTTP plutôt que d’ouvrir le fichier HTML directement, car les modules JavaScript nécessitent un serveur.
 
 ## Modifier les pièces
 
@@ -46,43 +47,43 @@ Le contrôle CI échoue si l’archive ne correspond plus aux sources. Les outil
 
 ## Publication autonome sur Hostinger
 
-Le `package.json` et le `package-lock.json` sont **à la racine du dépôt**. Le site utilise Node.js 22 ou plus, sans dépendance npm.
+Le site est une application **statique Vite**. Node sert uniquement à construire les fichiers publics. Il n’y a aucun serveur Node à démarrer en production.
+
+Après fusion de la correction dans `main`, configurer l’import GitHub dans Hostinger :
+
+| Réglage | Valeur |
+|---|---|
+| Préréglage de framework | **Vite** |
+| Branche | `main` |
+| Répertoire root | `./` |
+| Version Node | `22.x` (22.12 minimum) |
+| Gestionnaire de paquets | `npm` |
+| Commande de compilation | `npm run build` |
+| Répertoire de sortie | `dist` |
+| Fichier d’entrée | Aucun ; effacer l’ancienne valeur `site/server.mjs` si elle reste visible |
+
+Enregistrer, puis redéployer. Si le formulaire ne propose pas Vite, réimporter le dépôt avec la version corrigée et sélectionner le déploiement statique Vite. Ne pas conserver le préréglage Other de l’ancienne configuration.
+
+Hostinger décrit les applications Vite statiques dans son [guide de déploiement](https://www.hostinger.com/support/how-to-deploy-apps-built-with-codex-on-hostinger/). La validation locale et la CI ne prouvent pas le succès du déploiement sur le compte Hostinger.
+
+### Vérifier la version construite en local
 
 ```sh
 npm ci
 npm run build
-npm start
+npm run preview
 ```
 
-`build` copie les fichiers publics et le ZIP de la skill dans `dist/` à la racine. `start` sert uniquement ces fichiers et écoute le port fourni par `PORT`. Pour le développement : `npm run dev` sert directement `site/dist/`.
-
-### Import du dépôt comme application Node.js
-
-Sur une offre Hostinger prenant en charge les applications Node.js, utiliser :
-
-| Réglage | Valeur |
-|---|---|
-| Racine du projet | Racine du dépôt (`.`) |
-| Type de framework | Other / Autre |
-| Version Node.js | 22 ou plus |
-| Installation | `npm ci` |
-| Construction | `npm run build` |
-| Dossier de sortie | `dist` |
-| Démarrage | `npm start` |
-| Fichier d’entrée, si demandé | `site/server.mjs` |
-
-Hostinger documente le type « Other » et les réglages à adapter dans son [guide Node.js](https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/). Ces commandes sont vérifiées localement ; aucun déploiement sur le compte Hostinger de la mainteneuse n’a été effectué.
+Ouvrir `http://127.0.0.1:4173`. `preview` sert uniquement aux essais locaux.
 
 ### Hébergement statique par gestionnaire de fichiers
 
-Il est aussi possible de déposer le contenu de `dist/` dans le dossier public du domaine, avec `index.html` à la racine. Les cinq fichiers incluent le téléchargement de la skill. Ne pas déposer les sources du serveur ni `package.json` dans le dossier public. Voir le [guide du gestionnaire de fichiers Hostinger](https://www.hostinger.com/support/4548688-basic-actions-in-the-file-manager-in-hostinger/).
-
-### Archive et CI
+Après `npm run build`, déposer **le contenu** de `dist/` dans le dossier public du domaine : `index.html`, le dossier `assets/` et `dyspositif-skill.zip`. Ne pas déposer les sources du dépôt dans le dossier public.
 
 ```sh
 python3 site/packager.py /tmp/dyspositif-hostinger.zip
 ```
 
-Cette archive est destinée à l’hébergement **statique** ; pour l’import Node.js, connecter le dépôt complet contenant le `package.json` racine. L’artefact GitHub Actions `dyspositif-hostinger` fournit les fichiers statiques après vérification.
+L’archive contient uniquement les fichiers publics construits. L’artefact GitHub Actions `dyspositif-hostinger` fournit également ces fichiers après vérification.
 
-Aucun workflow ne déploie le site. La publication reste à la main de la mainteneuse. L’ancien aperçu privé est indépendant et n’est pas actualisé par cette PR.
+Aucun workflow ne déploie le site. La publication reste à la main de la mainteneuse.
