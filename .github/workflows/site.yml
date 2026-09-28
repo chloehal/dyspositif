@@ -15,5 +15,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --check site/dist/app.mjs
+      - run: node --check site/dist/app.js
       - run: node --test site/tests/puzzle.test.mjs
+      - name: Préparer les fichiers pour Hostinger
+        run: python3 site/packager.py /tmp/dyspositif-hostinger.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dyspositif-hostinger
+          path: site/dist/*
+          if-no-files-found: error

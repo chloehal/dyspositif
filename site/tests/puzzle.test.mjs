@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {assemble,NEEDS} from '../dist/puzzle.mjs';
+import {assemble,NEEDS} from '../dist/puzzle.js';
 
 test('sans réponse, demander les besoins sans inventer un profil',()=>{const {text}=assemble();assert.match(text,/Je n’ai pas encore précisé/);assert.match(text,/Conserve mes mots exacts/);assert.match(text,/Ne crée pas de synthèse/);});
 test('combinaisons indépendantes de l’ordre et sans doublons',()=>{assert.deepEqual(assemble({needs:['fatigue','lines','lines']}),assemble({needs:['lines','fatigue']}));assert.equal(assemble({needs:['lines']}).text.split('Je perds ma ligne').length,2);});

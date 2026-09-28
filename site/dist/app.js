@@ -1,4 +1,4 @@
-import {NEEDS,assemble} from './puzzle.mjs';
+import {NEEDS,assemble} from './puzzle.js';
 const form=document.querySelector('#puzzle-form'),output=document.querySelector('#prompt-output');
 for(const need of NEEDS){const label=document.createElement('label');label.className='choice';label.innerHTML=`<input type="checkbox" name="needs" value="${need.id}"><span class="choice-label"></span>`;label.querySelector('.choice-label').textContent=need.label;document.querySelector('#need-choices').append(label);}
 let step=0,revision=0;
