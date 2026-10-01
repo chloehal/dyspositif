@@ -146,3 +146,78 @@ legend, .field-label { font-size: .95rem; font-weight: 600; line-height: 1.6; ma
 }
 
 .hero-actions{display:flex;gap:22px;align-items:center;flex-wrap:wrap;margin-top:24px}.hero-actions .primary{margin-left:0}.hero-actions>a:last-child{font-size:.875rem}.skill-section{scroll-margin-top:24px;margin-bottom:50px}.skill-grid{display:grid;grid-template-columns:1fr 1.25fr;gap:70px}.skill-grid h3{font-size:1.1rem;margin-bottom:12px}.skill-grid p{font-size:.9375rem;color:#555}.download{margin:22px 0 0}.skill-grid .helper{font-size:.875rem}.usage-steps{margin:0;padding-left:23px}.usage-steps li{padding-left:10px;margin-bottom:28px}.usage-steps li::marker{color:#777;font-size:.875rem}blockquote{margin:17px 0 0;padding:0 0 0 16px;border-left:2px solid #ccc;font-size:.9375rem;color:#444}.technical-help{border-top:1px solid var(--line);padding-top:19px;margin-top:15px;font-size:.875rem}.technical-help summary{cursor:pointer;min-height:36px}.technical-help p{max-width:800px;margin:12px 0;color:#555}.technical-help code{overflow-wrap:anywhere}.preview-explanation{max-width:740px;font-size:.9375rem;color:#666;margin:-10px 0 30px}.skill-next{display:block;font-size:.875rem;margin:10px 0 18px}.header nav a:last-child{font-weight:600}@media(max-width:760px){.skill-grid{grid-template-columns:1fr;gap:28px}.hero-actions{gap:17px}.skill-section .section-heading{display:block}.skill-section .section-heading p{margin-top:8px}}
+
+/* Parcours étudiant : des exemples lisibles, sans effet ni animation. */
+:focus-visible { outline: 3px solid #242424; outline-offset: 4px; }
+main:focus { outline: none; }
+[id] { scroll-margin-top: 24px; }
+.header nav { flex-wrap: wrap; gap: 8px 24px; }
+.header nav a { display: inline-flex; align-items: center; min-height: 44px; }
+.hero { grid-template-columns: 1.15fr 1fr; gap: 50px; padding-bottom: 72px; }
+h1 { font-size: clamp(2rem, 4.2vw, 3.1rem); line-height: 1.18; }
+.hero-intro p + p { margin-top: 18px; }
+.eyebrow { font-size: .875rem; color: #595959; margin-bottom: 18px; }
+.story-section { margin-bottom: 64px; }
+.story-section .section-heading h2 { font-size: 1.55rem; max-width: 38ch; }
+.story-lead { max-width: 68ch; }
+.example-grid, .journey { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+.example-sheet { padding: 28px; border: 1px solid #b2b2b2; border-radius: 4px; }
+.example-sheet h3 { font-size: 1.15rem; margin-bottom: 20px; }
+.example-sheet p { max-width: 60ch; }
+.example-airy p + p { margin-top: 20px; }
+.example-caption { margin-top: 20px; font-size: .9375rem; }
+.story-conclusion { max-width: 68ch; margin-top: 32px; }
+.story-conclusion h3 { font-size: 1.2rem; margin-bottom: 12px; }
+.story-conclusion a { display: inline-block; margin-top: 16px; padding-block: 8px; }
+.journey { grid-template-columns: repeat(3, minmax(0, 1fr)); padding-left: 24px; margin: 0; gap: 38px; }
+.journey li { padding-left: 4px; }
+.journey h3 { font-size: 1.1rem; margin-bottom: 12px; }
+.journey p { color: #555; }
+.scope-note { border-left: 2px solid #777; padding-left: 18px; margin-top: 32px; max-width: 74ch; }
+.technical-help summary { min-height: 44px; padding-block: 8px; }
+.prompt-card { position: static; }
+.prompt-card textarea, .text-input, .form-panel textarea, .secondary { border-color: #858585; }
+.conflict-note:empty { display: none; }
+.steps button span { color: #666; }
+.builder, .prompt-card, .hero > *, .skill-grid > * { min-width: 0; }
+.piece-tags { max-height: none; overflow: visible; }
+body { overflow-wrap: break-word; }
+@media (max-width: 760px) {
+  .hero, .example-grid, .journey { grid-template-columns: 1fr; }
+  .hero-intro { max-width: 65ch; }
+  .journey { gap: 24px; }
+  .header { flex-wrap: wrap; gap: 4px; padding-block: 16px; }
+  .header nav { width: 100%; font-size: .875rem; gap: 4px 18px; }
+  .header nav a:first-child { display: inline-flex; }
+  .example-sheet { padding: 22px; }
+  .story-section { margin-bottom: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+/* Une démonstration manipulable, avec le texte intact dans le DOM. */
+.visual-journey { list-style: none; padding: 0; gap: 0; border-block: 1px solid var(--line); }
+.visual-journey li { position: relative; padding: 28px; }
+.visual-journey li + li { border-left: 1px solid var(--line); }
+.visual-journey li + li::before { content: '→'; position: absolute; left: -12px; top: 47px; background: #fff; padding: 0 4px; color: #666; }
+.visual-journey svg { display: block; width: 56px; height: 56px; fill: #fff; stroke: #333; stroke-width: 1.5; margin-bottom: 22px; }
+.journey-number { position: absolute; top: 35px; right: 28px; color: #666; font-size: .8rem; }
+.visual-journey h3 { margin-bottom: 6px; }
+.visual-journey p { font-size: .9375rem; }
+.demo-footer { display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:12px;margin-top:24px;font-size:.875rem; }
+.demo-footer p { color:#595959; }
+.demo-footer a { padding-block:10px; }
+.install-details summary { min-height: 44px; cursor: pointer; padding-block: 10px; }
+@media(max-width:760px) {
+ .visual-journey li { padding: 20px 20px 20px 96px; min-height: 110px; }
+ .visual-journey svg { position: absolute; left: 20px; top: 24px; width: 44px; height: 44px; }
+ .visual-journey li + li { border-left: 0; border-top: 1px solid var(--line); }
+ .visual-journey li + li::before { content: '↓'; top: -15px; left: 37px; }
+ .journey-number { position: static; font-size: .75rem; }
+
+}
+
+.install-list { padding-left: 22px; margin: 14px 0; }
+.install-list li { margin-bottom: 12px; }
+.install-details code { overflow-wrap: anywhere; }

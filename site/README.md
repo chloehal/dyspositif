@@ -34,7 +34,7 @@ Le site expose, lorsque disponible, un outil WebMCP de lecture seule `read_assem
 
 ## La skill au premier plan
 
-La landing présente la skill avant le générateur : téléchargement de `dyspositif-skill.zip`, installation, exemple de demande avec une synthèse DOCX et essai sur extrait. Le générateur reste un avant-goût facultatif. Le parcours Claude est sourcé dans la page ; l’import et l’utilisation sur un compte Claude réel n’ont pas été testés dans cette intervention.
+La landing présente la skill avant le générateur : téléchargement de `dyspositif-skill.zip`, installation, exemple de demande avec une synthèse DOCX et essai sur extrait. Le générateur reste un avant-goût facultatif. Deux parcours sont présentés : ChatGPT sur ordinateur (installation assistée depuis le dossier local complet, puis sélection avec @) et Claude (import ZIP). La documentation OpenAI distingue les skills autonomes sur ordinateur des skills distribuées dans des plugins sur le web/mobile. Aucun plugin Dyspositif n’est publié par cette modification. Les installations sur des comptes vierges ChatGPT et Claude n’ont pas été testées ; les liens officiels et une alternative par prompt sont fournis.
 
 Le ZIP contient `dyspositif/SKILL.md`, les scripts Python, les références, le README et la licence. Il correspond aux sources de la refonte, sans documents personnels. Après modification de la skill, le régénérer avant de publier :
 
@@ -87,3 +87,11 @@ python3 site/packager.py /tmp/dyspositif-hostinger.zip
 L’archive contient uniquement les fichiers publics construits. L’artefact GitHub Actions `dyspositif-hostinger` fournit également ces fichiers après vérification.
 
 Aucun workflow ne déploie le site. La publication reste à la main de la mainteneuse.
+
+## Parcours étudiant et accessibilité
+
+La page présente un schéma en trois étapes, puis dirige vers l’installation de la skill et le générateur. L’exemple illustratif a été retiré pour garder un parcours direct.
+
+Vérifications : build et tests Node. Le lien d’évitement, la navigation mobile et l’accès clavier au prompt sont conservés. Les instructions d’installation restent dans un volet natif.
+
+Références : [reflow WCAG](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html) et [taille des cibles](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html). Ces contrôles ne valent pas certification WCAG : essais avec lecteur d’écran et étudiants concernés encore nécessaires.
