@@ -12,3 +12,16 @@ document.querySelector('#view-prompt').addEventListener('click',()=>document.que
 update();showStep(0,false);document.querySelector('#interactive-builder').hidden=false;
 // Lecture seule : même résultat que le champ visible, sans transmettre les choix.
 if(document.modelContext?.registerTool){try{Promise.resolve(document.modelContext.registerTool({name:'read_assembled_prompt',title:'Lire le prompt assemblé',description:'Retourne le prompt actuellement visible, construit à partir des choix de la personne. Ne modifie aucun choix et ne copie rien dans le presse-papiers.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:true},execute(input){if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).length)throw new TypeError('Aucun paramètre attendu.');return {prompt:output.value};}})).catch(()=>{});}catch{/* Le générateur reste utilisable sans WebMCP. */}}
+
+// Démonstration visuelle indépendante : aucune modification des choix du prompt.
+const demoControls=document.querySelector('#example-controls');
+function updateExample(){
+  const airy=document.querySelector('#demo-airy').checked;
+  const bold=document.querySelector('#demo-bold').checked;
+  const text=document.querySelector('#demo-text');
+  text.classList.toggle('is-airy',airy);
+  text.classList.toggle('is-bold',bold);
+  document.querySelector('#demo-status').textContent=airy&&bold?'Texte aéré et repères en gras.':airy?'Texte aéré.':bold?'Repères en gras.':'Présentation originale.';
+}
+demoControls.addEventListener('change',updateExample);
+updateExample();demoControls.hidden=false;
