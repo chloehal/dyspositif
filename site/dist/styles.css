@@ -236,3 +236,18 @@ body { overflow-wrap: break-word; }
  .demo-layout { grid-template-columns: 1fr; gap: 24px; }
  .demo-sheet { min-height: 0; padding: 22px; }
 }
+
+.case-steps { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; margin-bottom: 28px; }
+.case-steps button { min-height: 48px; border: 1px solid #858585; border-radius: 4px; background: #fff; color: #242424; padding: 12px; text-align: left; font-size: .875rem; }
+.case-steps [aria-pressed=true] { background: #242424; color: #fff; }
+.case-story h3 { font-size: 1.35rem; line-height: 1.45; }
+.case-needs { padding-left: 20px; margin: 22px 0; }
+.case-needs li { margin-bottom: 12px; }
+.case-progress { color: #595959; font-size: .875rem; margin: 24px 0 14px; }
+.case-document h4 { margin: 20px 0 8px; font-size: 1rem; font-weight: 600; }
+.case-document #demo-text { font-size: .9375rem; }
+.case-nav { display: flex; gap: 4px 16px; flex-wrap: wrap; padding-bottom: 12px; border-bottom: 1px solid #bbb; }
+.case-nav a { font-size: .875rem; padding-block: 10px; }
+.case-document[data-version="1"] .case-method span, .case-document[data-version="2"] .case-method span { display: block; padding: 10px 0; border-bottom: 1px solid #ddd; }
+.case-document:not([data-version="0"]) .case-exception { border-left: 2px solid #555; padding-left: 14px; }
+@media(max-width:760px) { .case-steps { grid-template-columns: repeat(2,minmax(0,1fr)); } }

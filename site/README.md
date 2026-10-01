@@ -90,8 +90,8 @@ Aucun workflow ne déploie le site. La publication reste à la main de la mainte
 
 ## Parcours étudiant et accessibilité
 
-La page présente un schéma en trois étapes puis un exemple interactif. Deux cases natives permettent d’aérer l’extrait et de mettre quelques repères en gras, séparément ou ensemble. Ces options changent uniquement la présentation CSS : le texte et les choix du générateur restent inchangés. Les instructions d’installation détaillées sont dans un volet natif.
+La page présente un schéma en trois étapes puis un cas interactif en quatre temps : besoins combinés, essai, retour de l’étudiant, ajustement. Le document illustratif contient une définition, une méthode et un point de vigilance. Les repères par titres sont conservés après le retour ; les étapes trop fragmentées sont regroupées. Le scénario est préparé, sans appel à une IA et indépendant du générateur.
 
-Contrôles réalisés : build et 10 tests Node, rendu à 320 et 1280 pixels sans débordement horizontal, activation des options au clavier, texte conservé et générateur indépendant. Le lien d’évitement conduit au contenu principal ; la navigation reste disponible sur mobile. Les contrôles interactifs restent masqués avant initialisation JavaScript, avec une explication sans JavaScript.
+Contrôles réalisés : build et 10 tests Node, rendu à 320 et 1280 pixels, activation des quatre étapes au clavier et identité du texte de l’extrait à chaque étape. Les contrôles restent masqués sans JavaScript ; un texte alternatif explique le cas. Les instructions d’installation restent dans un volet natif.
 
 Références : [reflow WCAG](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html) et [taille des cibles](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html). Ces contrôles ne valent pas certification WCAG : essais avec lecteur d’écran et étudiants concernés encore nécessaires.

@@ -13,15 +13,23 @@ update();showStep(0,false);document.querySelector('#interactive-builder').hidden
 // Lecture seule : même résultat que le champ visible, sans transmettre les choix.
 if(document.modelContext?.registerTool){try{Promise.resolve(document.modelContext.registerTool({name:'read_assembled_prompt',title:'Lire le prompt assemblé',description:'Retourne le prompt actuellement visible, construit à partir des choix de la personne. Ne modifie aucun choix et ne copie rien dans le presse-papiers.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:true},execute(input){if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).length)throw new TypeError('Aucun paramètre attendu.');return {prompt:output.value};}})).catch(()=>{});}catch{/* Le générateur reste utilisable sans WebMCP. */}}
 
-// Démonstration visuelle indépendante : aucune modification des choix du prompt.
-const demoControls=document.querySelector('#example-controls');
-function updateExample(){
-  const airy=document.querySelector('#demo-airy').checked;
-  const bold=document.querySelector('#demo-bold').checked;
-  const text=document.querySelector('#demo-text');
-  text.classList.toggle('is-airy',airy);
-  text.classList.toggle('is-bold',bold);
-  document.querySelector('#demo-status').textContent=airy&&bold?'Texte aéré et repères en gras.':airy?'Texte aéré.':bold?'Repères en gras.':'Présentation originale.';
+// Cas éditorial préparé, indépendant du générateur et sans appel à une IA.
+const caseButtons=[...document.querySelectorAll('[data-case]')];
+const caseVersions=['Document de départ','Premier essai : étapes séparées','Premier essai à revoir','Essai ajusté : étapes regroupées'];
+const caseNextLabels=['Voir le premier essai →','Lire le retour →','Voir l’ajustement →','Revoir le départ ↺'];
+let caseStep=0;
+function showCase(index){
+  caseStep=index;
+  caseButtons.forEach((button,i)=>button.setAttribute('aria-pressed',String(i===index)));
+  document.querySelectorAll('[data-case-panel]').forEach((panel,i)=>panel.hidden=i!==index);
+  document.querySelector('#case-document').dataset.version=String(index);
+  document.querySelector('#case-nav').hidden=index===0;
+  document.querySelector('#case-version').textContent=caseVersions[index];
+  document.querySelector('#case-status').textContent=`Étape ${index+1} sur 4 · ${caseVersions[index]}`;
+  document.querySelector('#case-next').textContent=caseNextLabels[index];
 }
-demoControls.addEventListener('change',updateExample);
-updateExample();demoControls.hidden=false;
+caseButtons.forEach((button,i)=>button.addEventListener('click',()=>showCase(i)));
+document.querySelector('#case-next').addEventListener('click',()=>showCase((caseStep+1)%4));
+showCase(0);
+document.querySelector('#case-controls').hidden=false;
+document.querySelector('#case-next').hidden=false;
