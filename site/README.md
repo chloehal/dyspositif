@@ -90,8 +90,8 @@ Aucun workflow ne déploie le site. La publication reste à la main de la mainte
 
 ## Parcours étudiant et accessibilité
 
-La page présente un schéma en trois étapes puis un avant/après de tableau, visible sans interaction. Les valeurs, unités et libellés sont identiques ; les en-têtes, limites de lignes et repères de colonnes deviennent plus distincts. Les deux tableaux ont des en-têtes sémantiques. L’exemple est illustratif, sans prétendre qu’un réglage convient à tous.
+La page présente un schéma en trois étapes, puis dirige vers l’installation de la skill et le générateur. L’exemple illustratif a été retiré pour garder un parcours direct.
 
-Vérifications : build, tests Node, comparaison des données des deux tableaux et affichage mobile. Aucun JavaScript n’est nécessaire pour lire l’exemple. Les instructions d’installation restent dans un volet natif.
+Vérifications : build et tests Node. Le lien d’évitement, la navigation mobile et l’accès clavier au prompt sont conservés. Les instructions d’installation restent dans un volet natif.
 
 Références : [reflow WCAG](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html) et [taille des cibles](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html). Ces contrôles ne valent pas certification WCAG : essais avec lecteur d’écran et étudiants concernés encore nécessaires.
