@@ -217,3 +217,7 @@ body { overflow-wrap: break-word; }
  .journey-number { position: static; font-size: .75rem; }
 
 }
+
+.install-list { padding-left: 22px; margin: 14px 0; }
+.install-list li { margin-bottom: 12px; }
+.install-details code { overflow-wrap: anywhere; }

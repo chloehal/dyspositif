@@ -34,7 +34,7 @@ Le site expose, lorsque disponible, un outil WebMCP de lecture seule `read_assem
 
 ## La skill au premier plan
 
-La landing présente la skill avant le générateur : téléchargement de `dyspositif-skill.zip`, installation, exemple de demande avec une synthèse DOCX et essai sur extrait. Le générateur reste un avant-goût facultatif. Le parcours Claude est sourcé dans la page ; l’import et l’utilisation sur un compte Claude réel n’ont pas été testés dans cette intervention.
+La landing présente la skill avant le générateur : téléchargement de `dyspositif-skill.zip`, installation, exemple de demande avec une synthèse DOCX et essai sur extrait. Le générateur reste un avant-goût facultatif. Deux parcours sont présentés : ChatGPT sur ordinateur (installation assistée depuis le dossier local complet, puis sélection avec @) et Claude (import ZIP). La documentation OpenAI distingue les skills autonomes sur ordinateur des skills distribuées dans des plugins sur le web/mobile. Aucun plugin Dyspositif n’est publié par cette modification. Les installations sur des comptes vierges ChatGPT et Claude n’ont pas été testées ; les liens officiels et une alternative par prompt sont fournis.
 
 Le ZIP contient `dyspositif/SKILL.md`, les scripts Python, les références, le README et la licence. Il correspond aux sources de la refonte, sans documents personnels. Après modification de la skill, le régénérer avant de publier :
 
