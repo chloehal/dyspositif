@@ -207,10 +207,20 @@ class TestQuestionnaire(BaseDocument):
         identifiants = [q["id"] for groupe in sortie["groupes"] for q in groupe]
         self.assertFalse([i for i in identifiants if i.startswith("c")])
 
-    def test_questions_par_groupes_de_trois(self):
+    def test_une_question_a_la_fois_par_defaut(self):
         sortie = self._questions()
-        self.assertTrue(all(len(groupe) <= 3 for groupe in sortie["groupes"]))
+        self.assertTrue(all(len(groupe) == 1 for groupe in sortie["groupes"]))
         self.assertIn("t'arrêter quand tu veux", sortie["annonce"])
+
+    def test_rythme_explicitement_demande_conserve(self):
+        sortie = self._questions(rythme="3")
+        self.assertEqual(sortie["presentation"]["par_groupe"], 3)
+        self.assertEqual(len(sortie["groupes"][0]), 3)
+
+    def test_une_question_a_la_fois_pour_toutes_les_branches(self):
+        for besoin in ("ligne", "chiffres", "vision", "attention", "fatigue"):
+            sortie = self._questions(difficultes=besoin)
+            self.assertTrue(all(len(groupe) == 1 for groupe in sortie["groupes"]), besoin)
 
     def test_questions_proposent_des_choix_sans_exiger_ecriture(self):
         chemin = RACINE / "references" / "questionnaire.json"

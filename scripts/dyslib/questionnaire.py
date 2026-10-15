@@ -9,7 +9,7 @@ def preparer(catalogue, difficultes, acces='visuel', rythme=None):
     for branche in branches:
         questions += catalogue['branches'].get(branche, [])
     presentation = {
-        'par_groupe': rythme or (1 if set(difficultes) & {'attention', 'fatigue', 'comprehension'} else 3),
+        'par_groupe': rythme or 1,
         'progression': 'texte', 'champ_libre_facultatif': True,
         'colonnes': 1, 'acces': acces, 'comparaison_visuelle': acces == 'visuel',
     }

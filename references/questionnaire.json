@@ -4,7 +4,10 @@
     "Recevoir la synthèse avant de montrer des variantes.",
     "Utiliser les réponses déjà données ; ne pas poser tout le catalogue.",
     "Un diagnostic ne vaut ni besoin ni autorisation.",
-    "Choix courts et explication libre facultative, y compris dictée.",
+    "Une question par message par défaut ; attendre la réponse avant de choisir la suivante.",
+    "Afficher deux ou trois choix principaux pertinents avec lettres ou chiffres ; garder le catalogue complet en réserve.",
+    "Choix courts et explication libre facultative, y compris dictée ; permettre autre, je ne sais pas et arrêt.",
+    "Passer à un essai dès que les besoins sont assez clairs ; ne pas épuiser les branches.",
     "Comparer au plus deux variantes à la fois sur le même extrait.",
     "Les questions de vécu produisent des propositions, les refus verrouillent le choix.",
     "Un besoin non prévu ouvre une question libre facultative, jamais une exclusion."
@@ -720,7 +723,7 @@
   "final": [],
   "presentation": {
     "defaut": {
-      "par_groupe": 3,
+      "par_groupe": 1,
       "progression": "texte",
       "champ_libre_facultatif": true,
       "colonnes": 1

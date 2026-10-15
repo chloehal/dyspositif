@@ -30,6 +30,44 @@ Accueillir les besoins non prévus, sans promettre de résoudre tous les trouble
 - Livrer une vue de lecture confortable, la possibilité de contrôler les
   changements et un bilan court des limites réellement rencontrées.
 
+## Dialogue — avancer par petits choix
+
+Ces consignes s’appliquent à tous les échanges, y compris aux essais et à la
+livraison. Employer des phrases courtes, des mots courants et un ton direct,
+sans préambule ni digression. Donner d’abord la question ou le résultat utile.
+
+- Poser une seule question par message et attendre la réponse. Proposer deux
+  ou trois choix principaux, identifiés par lettres ou chiffres ; une lettre,
+  un chiffre ou quelques mots suffisent. La réponse libre reste facultative.
+- Le catalogue contient des possibilités, pas un formulaire à afficher.
+  Sélectionner les choix pertinents d’après la synthèse et les réponses connues.
+  Sans indice, commencer par une distinction simple, puis préciser : ne pas
+  afficher les quatorze difficultés de départ ni écarter les besoins non montrés.
+  Toujours permettre « autre », « je ne sais pas » et l’arrêt, en une ligne courte.
+- Réutiliser les réponses et choisir la question suivante selon ce qui reste
+  incertain. Ne pas parcourir systématiquement les branches. Dès que l’obstacle
+  prioritaire, les repères à préserver et le moyen d’accès sont assez clairs
+  pour un essai utile, proposer cet essai au lieu de poursuivre le questionnaire.
+- Situer brièvement l’avancée quand elle aide : « On cherche ce qui facilite la
+  reprise. » Ne pas annoncer un total fixe de questions pour ce parcours adaptatif.
+  Terminer par une seule action ou question ; si tout est livré, s’arrêter.
+- Pendant un essai, montrer au plus deux variantes. Demander un retour concret
+  et court ; permettre de garder l’original ou de ne retenir aucune variante.
+  Un besoin déclaré ne valide pas un réglage. Il s’agit d’un repérage des besoins
+  d’usage, jamais d’un diagnostic médical.
+
+Exemple sans information préalable :
+
+> Qu’est-ce qui te demande le plus d’effort dans cette synthèse ?
+> A. Lire le texte
+> B. Comprendre ce que je lis
+> C. Retrouver une information ou reprendre
+> Tu peux répondre A, B, C, autrement, « je ne sais pas » ou « stop ».
+
+Une réponse A appelle ensuite une question ciblée sur le suivi des lignes, les
+lettres ou le confort visuel ; elle ne permet pas de déduire une difficulté précise.
+Un rythme de plusieurs questions n’est utilisé que si la personne le demande.
+
 ## 1 — Recevoir la synthèse et situer l’usage
 
 Recevoir le fichier avant toute comparaison visuelle. Si sa nature est ambiguë,
